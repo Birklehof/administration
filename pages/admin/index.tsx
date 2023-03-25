@@ -2,9 +2,9 @@ import AdminMenu from "@/components/AdminMenu";
 import Loading from "@/components/Loading";
 import useAuth from "@/lib/hooks/useAuth";
 import Head from "@/components/Head";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-export default function AssistantIndex() {
+export default function AdminIndex() {
   const { isLoggedIn, user } = useAuth();
 
   useEffect(() => {

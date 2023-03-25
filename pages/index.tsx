@@ -3,7 +3,6 @@ import Head from "@/components/Head";
 import useAuth from "@/lib/hooks/useAuth";
 import router from "next/router";
 import { useEffect } from "react";
-import useRemoteConfig from "@/lib/hooks/useRemoteConfig";
 
 export default function Home() {
   const { isLoggedIn, user, role, logout } = useAuth();
