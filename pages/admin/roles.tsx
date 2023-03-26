@@ -88,12 +88,20 @@ export default function AdminStudents() {
                     {role.role}
                   </span>
                 </div>
-                <button
-                  className="btn btn-ghost btn-circle btn-sm text-error mt-0"
-                  aria-details="Runde löschen"
-                >
-                  <Icon name="TrashIcon" />
-                </button>
+                <div>
+                  <button
+                    className="btn btn-ghost btn-circle btn-sm text-warning mt-0"
+                    aria-details="Runde löschen"
+                  >
+                    <Icon name="PencilIcon" />
+                  </button>
+                  <button
+                    className="btn btn-ghost btn-circle btn-sm text-error mt-0"
+                    aria-details="Runde löschen"
+                  >
+                    <Icon name="TrashIcon" />
+                  </button>
+                </div>
               </div>
             ))}
             {activeTab !== "" && (
