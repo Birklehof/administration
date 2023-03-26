@@ -75,7 +75,7 @@ export default function AdminStudents() {
           <div className="searchbox">
             <div className="inputElementsContainer">
               <button className="btn btn-circle btn-ghost btn-sm lg:hidden">
-                <Link href={"/runner"}>
+                <Link href={"/admin"}>
                   <Icon name="HomeIcon" />
                 </Link>
               </button>
@@ -149,6 +149,9 @@ export default function AdminStudents() {
                   </div>
                 );
               })}
+            <div className="w-full text-sm text-center">
+              Keine weiteren Nutzer
+            </div>
           </div>
         </div>
       </main>

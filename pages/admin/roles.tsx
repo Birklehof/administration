@@ -25,6 +25,8 @@ export default function AdminStudents() {
   const { isLoggedIn, user } = useAuth();
   const { roles } = useApps();
 
+  const [activeTab, setActiveTab] = useState("");
+
   useEffect(() => {
     if (!isLoggedIn) {
       return;
@@ -46,20 +48,87 @@ export default function AdminStudents() {
         <div className="hidden lg:flex">
           <AdminMenu />
         </div>
-        <div className="flex flex-col w-full lg:w-3/4">
-          {/* display the apps with its respective roles */}
-          {Object.keys(roles).map((app) => (
-            <div>
-              {app}
-              <div>
-                {roles[app].map((role: Role) => (
-                  <div>
-                    - {role.email} has role {role.role}
-                  </div>
+        <div className="flex gap-3 flex-col h-screen justify-center items-center lg:items-start w-full lg:w-[42rem]">
+          <div className="searchbox">
+            <div className="inputElementsContainer overflow-x-scroll">
+              <button className="btn btn-circle btn-ghost btn-sm lg:hidden">
+                <Link href={"/admin"}>
+                  <Icon name="HomeIcon" />
+                </Link>
+              </button>
+              <div className="tabs bg-base-100">
+                {Object.keys(roles).map((app) => (
+                  <a
+                    className={
+                      activeTab === app
+                        ? "tab tab-md tab-active bg-primary rounded-full text-white font-semibold"
+                        : "tab tab-md"
+                    }
+                    onClick={() => setActiveTab(app)}
+                  >
+                    {app}
+                  </a>
                 ))}
               </div>
             </div>
-          ))}
+          </div>
+          <div className="verticalList !pt-20 !gap-2">
+            {roles[activeTab]?.map((role: Role) => (
+              <div
+                key={role.email}
+                className="alert shadow rounded-full bg-base-100 flex flex-row justify-between"
+              >
+                <div className="whitespace-nowrap overflow-hidden">
+                  <span className="overflow-hidden text-ellipsis font-bold">
+                    {role.email}
+                  </span>
+                </div>
+                <div className="whitespace-nowrap overflow-hidden">
+                  <span className="overflow-hidden text-ellipsis">
+                    {role.role}
+                  </span>
+                </div>
+                <button
+                  className="btn btn-ghost btn-circle btn-sm text-error mt-0"
+                  aria-details="Runde löschen"
+                >
+                  <Icon name="TrashIcon" />
+                </button>
+              </div>
+            ))}
+            {activeTab !== "" && (
+              <>
+                <div className="divider">Neue Rolle hinzufügen</div>
+                <div className="menu menu-horizontal bg-base-100 p-2 rounded-full z-40 w-full">
+                  <div className="inputElementsContainer">
+                    <input
+                      type="text"
+                      placeholder="Suchen..."
+                      className="font-bold"
+                    />
+                    <select className="select select-bordered rounded-full select-sm">
+                      <option disabled selected>
+                        Rolle
+                      </option>
+                      <option value="admin">Admin</option>
+                      <option value="assistant">Assistent</option>
+                    </select>
+                    <button
+                      className="btn btn-ghost btn-circle btn-sm text-success"
+                      aria-details="Runde löschen"
+                    >
+                      <Icon name="UserAddIcon" />
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+            {activeTab === "" && (
+              <div className="w-full text-sm text-center">
+                Wähle eine App aus, um die Rollen zu verwalten.
+              </div>
+            )}
+          </div>
         </div>
       </main>
     </>
