@@ -11,6 +11,8 @@ import useRemoteConfig from "@/lib/hooks/useRemoteConfig";
 import useStaff from "@/lib/hooks/useStaff";
 import useApps from "@/lib/hooks/useApps";
 import Role from "@/lib/interfaces/role";
+import { deleteDoc, doc, setDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 interface StudentOrStaff {
   id: string;
@@ -21,11 +23,18 @@ interface StudentOrStaff {
   house?: string;
 }
 
+function validateEmail(email: string) {
+  var re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,5}$/;
+  return re.test(email);
+}
+
 export default function AdminStudents() {
   const { isLoggedIn, user } = useAuth();
   const { roles } = useApps();
-
   const [activeTab, setActiveTab] = useState("");
+  const [newRoleEmail, setNewRoleEmail] = useState("");
+  const [newRoleRole, setNewRoleRole] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -37,8 +46,35 @@ export default function AdminStudents() {
     return <Loading />;
   }
 
-  async function deleteUserHandler(user_id: string) {
-    alert("Not implemented yet.");
+  async function addEmail() {
+    if (submitting) {
+      return;
+    }
+
+    setSubmitting(true);
+
+    await setDoc(doc(db, "apps", activeTab, "roles", newRoleEmail), {
+      role: newRoleRole,
+    })
+      .then(() => {
+        setNewRoleEmail("");
+        setNewRoleRole("");
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
+  }
+
+  async function deletePermission(email: string) {
+    if (submitting) {
+      return;
+    }
+
+    setSubmitting(true);
+
+    await deleteDoc(doc(db, "apps", activeTab, "roles", email)).finally(() => {
+      setSubmitting(false);
+    });
   }
 
   return (
@@ -59,14 +95,19 @@ export default function AdminStudents() {
               <div className="tabs bg-base-100">
                 {Object.keys(roles).map((app) => (
                   <a
+                    key={app}
                     className={
                       activeTab === app
                         ? "tab tab-md tab-active bg-primary rounded-full text-white font-semibold"
                         : "tab tab-md"
                     }
-                    onClick={() => setActiveTab(app)}
+                    onClick={() => {
+                      setNewRoleEmail("");
+                      setNewRoleRole("");
+                      setActiveTab(app);
+                    }}
                   >
-                    {app}
+                    {app.charAt(0).toUpperCase() + app.slice(1)}
                   </a>
                 ))}
               </div>
@@ -91,13 +132,18 @@ export default function AdminStudents() {
                 <div>
                   <button
                     className="btn btn-ghost btn-circle btn-sm text-warning mt-0"
-                    aria-details="Runde löschen"
+                    aria-label="Berechtigung bearbeiten"
+                    onClick={() => {
+                      setNewRoleEmail(role.email);
+                      setNewRoleRole(role.role);
+                    }}
                   >
                     <Icon name="PencilIcon" />
                   </button>
                   <button
                     className="btn btn-ghost btn-circle btn-sm text-error mt-0"
-                    aria-details="Runde löschen"
+                    onClick={async () => await deletePermission(role.email)}
+                    aria-label="Berechtigung löschen"
                   >
                     <Icon name="TrashIcon" />
                   </button>
@@ -106,16 +152,25 @@ export default function AdminStudents() {
             ))}
             {activeTab !== "" && (
               <>
-                <div className="divider">Neue Rolle hinzufügen</div>
+                <div className="divider">
+                  Berechtigungen hinzufügen oder bearbeiten
+                </div>
                 <div className="menu menu-horizontal bg-base-100 p-2 rounded-full z-40 w-full">
                   <div className="inputElementsContainer">
                     <input
+                      value={newRoleEmail}
+                      onChange={(e) => setNewRoleEmail(e.target.value)}
                       type="text"
-                      placeholder="Suchen..."
+                      placeholder="E-Mail Adresse"
                       className="font-bold"
                     />
-                    <select className="select select-bordered rounded-full select-sm">
-                      <option disabled selected>
+                    <select
+                      className="select select-bordered rounded-full select-sm"
+                      value={newRoleRole}
+                      onChange={(e) => setNewRoleRole(e.target.value)}
+                      aria-label="Rolle"
+                    >
+                      <option disabled value="">
                         Rolle
                       </option>
                       <option value="admin">Admin</option>
@@ -123,9 +178,25 @@ export default function AdminStudents() {
                     </select>
                     <button
                       className="btn btn-ghost btn-circle btn-sm text-success"
-                      aria-details="Runde löschen"
+                      aria-label="Berechtigung hinzufügen"
+                      onClick={async () => await addEmail()}
+                      disabled={
+                        submitting ||
+                        !newRoleEmail ||
+                        !newRoleRole ||
+                        !validateEmail(newRoleEmail)
+                      }
                     >
-                      <Icon name="UserAddIcon" />
+                      {roles[activeTab]?.find(
+                        (role: Role) => role.email === newRoleEmail
+                      ) ? (
+                        <Icon
+                          name="PencilIcon"
+                          aria-label="Berechtigung hinzugefügt"
+                        />
+                      ) : (
+                        <Icon name="UserAddIcon" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -133,7 +204,7 @@ export default function AdminStudents() {
             )}
             {activeTab === "" && (
               <div className="w-full text-sm text-center">
-                Wähle eine App aus, um die Rollen zu verwalten.
+                Wähle eine App aus, um ihre Berechtigungen zu verwalten.
               </div>
             )}
           </div>

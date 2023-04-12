@@ -11,12 +11,12 @@ export default function AdminMenu() {
             icon: "HomeIcon",
           },
           {
-            name: "Users",
+            name: "Nutzer",
             href: "/admin/users",
             icon: "UserGroupIcon",
           },
           {
-            name: "roles",
+            name: "Berechtigungen",
             href: "/admin/roles",
             icon: "KeyIcon",
           },

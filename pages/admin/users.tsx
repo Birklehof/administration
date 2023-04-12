@@ -85,7 +85,11 @@ export default function AdminStudents() {
                 onChange={(e) => setFilterName(e.target.value)}
               />
               <div className="dropdown dropdown-bottom dropdown-end">
-                <label tabIndex={0} className="btn btn-circle btn-ghost btn-sm">
+                <label
+                  tabIndex={0}
+                  className="btn btn-circle btn-ghost btn-sm"
+                  aria-label="Filtern"
+                >
                   <Icon name="AdjustmentsIcon" />
                 </label>
                 <div
@@ -141,7 +145,7 @@ export default function AdminStudents() {
                     </div>
                     <button
                       className="btn btn-ghost btn-circle btn-sm text-error"
-                      aria-details="Runde löschen"
+                      aria-label="Nutzer löschen"
                       onClick={() => deleteUserHandler(user.id)}
                     >
                       <Icon name="TrashIcon" />
