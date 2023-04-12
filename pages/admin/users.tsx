@@ -19,7 +19,7 @@ interface StudentOrStaff {
   house?: string;
 }
 
-export default function AdminStudents() {
+export default function AdminUsers() {
   const { isLoggedIn, user } = useAuth();
   const { students } = useStudents();
   const { staff } = useStaff();
@@ -66,7 +66,7 @@ export default function AdminStudents() {
 
   return (
     <>
-      <Head title="Assistent" />
+      <Head title="Nutzerverwaltung" />
       <main className="flex bg-base-200 justify-center h-screen items-center">
         <div className="hidden lg:flex">
           <AdminMenu />

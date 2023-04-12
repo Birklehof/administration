@@ -4,31 +4,14 @@ import Loading from "@/components/Loading";
 import useAuth from "@/lib/hooks/useAuth";
 import AdminMenu from "@/components/AdminMenu";
 import Icon from "@/components/Icon";
-import useStudents from "@/lib/hooks/useStudents";
 import Link from "next/link";
-import { Student } from "@/lib/interfaces/student";
-import useRemoteConfig from "@/lib/hooks/useRemoteConfig";
-import useStaff from "@/lib/hooks/useStaff";
 import useApps from "@/lib/hooks/useApps";
 import Role from "@/lib/interfaces/role";
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { validateEmail } from "@/lib/helper";
 
-interface StudentOrStaff {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  class?: string;
-  house?: string;
-}
-
-function validateEmail(email: string) {
-  var re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,5}$/;
-  return re.test(email);
-}
-
-export default function AdminStudents() {
+export default function AdminRoles() {
   const { isLoggedIn, user } = useAuth();
   const { roles } = useApps();
   const [activeTab, setActiveTab] = useState("");
@@ -46,7 +29,7 @@ export default function AdminStudents() {
     return <Loading />;
   }
 
-  async function addEmail() {
+  async function setRole() {
     if (submitting) {
       return;
     }
@@ -65,7 +48,7 @@ export default function AdminStudents() {
       });
   }
 
-  async function deletePermission(email: string) {
+  async function deleteRole(email: string) {
     if (submitting) {
       return;
     }
@@ -79,7 +62,7 @@ export default function AdminStudents() {
 
   return (
     <>
-      <Head title="Assistent" />
+      <Head title="Rollenverwaltung" />
       <main className="flex bg-base-200 justify-center h-screen items-center">
         <div className="hidden lg:flex">
           <AdminMenu />
@@ -142,7 +125,7 @@ export default function AdminStudents() {
                   </button>
                   <button
                     className="btn btn-ghost btn-circle btn-sm text-error mt-0"
-                    onClick={async () => await deletePermission(role.email)}
+                    onClick={async () => await deleteRole(role.email)}
                     aria-label="Berechtigung löschen"
                   >
                     <Icon name="TrashIcon" />
@@ -179,7 +162,7 @@ export default function AdminStudents() {
                     <button
                       className="btn btn-ghost btn-circle btn-sm text-success"
                       aria-label="Berechtigung hinzufügen"
-                      onClick={async () => await addEmail()}
+                      onClick={async () => await setRole()}
                       disabled={
                         submitting ||
                         !newRoleEmail ||
