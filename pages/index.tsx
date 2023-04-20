@@ -4,7 +4,7 @@ import useAuth from "@/lib/hooks/useAuth";
 import router from "next/router";
 import { useEffect } from "react";
 
-export default function Home() {
+export default function Index() {
   const { isLoggedIn, user, role, logout } = useAuth();
 
   useEffect(() => {
