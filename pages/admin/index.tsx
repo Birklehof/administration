@@ -20,9 +20,7 @@ export default function AdminIndex() {
   return (
     <>
       <Head title="Home" />
-      <main className="flex bg-base-200 justify-center h-screen items-center">
-        <AdminMenu />
-      </main>
+      <main className="flex bg-base-200 justify-center h-screen items-center"></main>
     </>
   );
 }
