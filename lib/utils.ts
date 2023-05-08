@@ -19,10 +19,7 @@ export function themedPromiseToast(
     },
     {
       ...options,
-      theme:
-        localStorage.getItem("usehooks-ts-dark-mode") === "dark"
-          ? "dark"
-          : "light",
+      theme: localStorage.getItem("usehooks-ts-dark-mode") ? "dark" : "light",
     }
   );
 }

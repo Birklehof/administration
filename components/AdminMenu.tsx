@@ -20,6 +20,11 @@ export default function AdminMenu() {
             href: "/admin/roles",
             icon: "KeyIcon",
           },
+          {
+            name: "24 Stunden Lauf",
+            href: "/admin/24-stunden-lauf",
+            icon: "FlagIcon",
+          },
         ]}
       />
     </>

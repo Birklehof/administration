@@ -1,10 +1,9 @@
 import React, { PropsWithChildren, useEffect } from "react";
-import Icon from "./Icon";
 import { useDarkMode } from "usehooks-ts";
 import { useRouter } from "next/router";
 import AdminMenu from "./AdminMenu";
 
-const Layout = ({ children }: PropsWithChildren) => {
+export default function Layout({ children }: PropsWithChildren) {
   const { isDarkMode, toggle } = useDarkMode();
   const router = useRouter();
 
@@ -19,12 +18,18 @@ const Layout = ({ children }: PropsWithChildren) => {
         className="hidden md:flex btn btn-square btn-ghost absolute top-3 left-3"
         onClick={toggle}
       >
-        {isDarkMode ? <Icon name="MoonIcon" /> : <Icon name="SunIcon" />}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 512 512"
+          fill="currentColor"
+          className="w-4 h-4"
+        >
+          <path d="M448 256c0-106-86-192-192-192V448c106 0 192-86 192-192zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z" />
+        </svg>
       </button>
 
       {router.asPath.split("/")[1] === "admin" && <AdminMenu />}
       {children}
     </>
   );
-};
-export default Layout;
+}

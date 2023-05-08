@@ -1,70 +1,43 @@
-import { useEffect, useState } from "react";
-import Head from "@/components/Head";
 import Loading from "@/components/Loading";
 import useAuth from "@/lib/hooks/useAuth";
-import Icon from "@/components/Icon";
-import { Staff, Student } from "@/lib/interfaces";
-import useRemoteConfig from "@/lib/hooks/useRemoteConfig";
+import Head from "@/components/Head";
+import { useEffect, useState } from "react";
 import useCollectionAsList from "@/lib/hooks/useCollectionAsList";
+import { Runner } from "@/lib/interfaces";
+import Icon from "@/components/Icon";
+import { useRouter } from "next/router";
 
-interface StudentOrStaff {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  class?: string;
-  house?: string;
-}
-
-export default function AdminUsers() {
+export default function Admin24StundenLauf() {
+  const router = useRouter();
+  const [runners, runnersLoading, runnersError] = useCollectionAsList<Runner>(
+    "/apps/24-stunden-lauf/" + router.query.runnersCollection
+  );
   const { isLoggedIn, user } = useAuth();
-  const [students, studentsLoading, studentsError] =
-    useCollectionAsList<Student>("students");
-  const [staff, staffLoading, staffError] = useCollectionAsList<Staff>("staff");
-  const users = [...students, ...staff] as StudentOrStaff[];
-  const { classes, houses } = useRemoteConfig();
 
-  const [filterClasses, setFilterClasses] = useState("");
-  const [filterHouse, setFilterHouse] = useState("");
   const [filterName, setFilterName] = useState("");
+
+  function filter(runner: Runner): boolean {
+    return !filterName || runner.name?.includes(filterName);
+  }
 
   useEffect(() => {
     if (!isLoggedIn) {
       return;
     }
+    console.log(runners);
   }, [isLoggedIn]);
 
-  if (!user || staffLoading || studentsLoading) {
+  if (!user || runnersLoading) {
     return <Loading />;
   }
 
-  function filter(user: StudentOrStaff): boolean {
-    if (filterClasses || filterHouse) {
-      if ("class" in user && "house" in user) {
-        const student = user as Student;
-        if (filterClasses && student.class !== filterClasses) {
-          return false;
-        }
-        if (filterHouse && student.house !== filterHouse) {
-          return false;
-        }
-      } else {
-        return false || (filterHouse == "Extern (Kollegium)" && !filterClasses);
-      }
-    }
-
-    return (
-      !filterName || (user.firstName + " " + user.lastName).includes(filterName)
-    );
-  }
-
-  async function deleteUserHandler(user_id: string) {
+  async function deleteRunnerHandler(runner_id: string) {
     alert("Not implemented yet.");
   }
 
   return (
     <>
-      <Head title="Nutzerverwaltung" />
+      <Head title="24 Stunden Lauf" />
       <main className="main">
         <div className="searchbox">
           <div className="input-elements-container">
@@ -73,7 +46,7 @@ export default function AdminUsers() {
               placeholder="Suchen..."
               onChange={(e) => setFilterName(e.target.value)}
             />
-            <div className="dropdown dropdown-bottom dropdown-end">
+            {/* <div className="dropdown dropdown-bottom dropdown-end">
               <label
                 tabIndex={0}
                 className="btn btn-circle btn-ghost btn-sm"
@@ -107,32 +80,32 @@ export default function AdminUsers() {
                   ))}
                 </select>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="vertical-list !pt-20 !gap-2">
-          {users
-            .filter((user) => {
-              return filter(user);
+          {runners
+            .filter((runner) => {
+              return filter(runner);
             })
-            .map((user) => {
+            .map((runner) => {
               return (
-                <div key={user.id} className="list-item">
+                <div key={runner.id} className="list-item">
                   <span className="whitespace-nowrap overflow-hidden pr-1">
                     <span className="overflow-hidden text-ellipsis font-semibold">
-                      {user.firstName} {user.lastName} {user.class} {user.house}
+                      {runner.id} {runner.number}
                     </span>
                   </span>
                   <span className="whitespace-nowrap overflow-hidden">
                     <span className="overflow-hidden text-ellipsis">
-                      {user.email}
+                      {runner.name}
                     </span>
                   </span>
                   <div className="spacer" />
                   <button
                     className="btn btn-outline btn-error btn-square btn-sm"
                     aria-label="Nutzer löschen"
-                    onClick={() => deleteUserHandler(user.id)}
+                    onClick={() => deleteRunnerHandler(runner.id)}
                   >
                     <Icon name="TrashIcon" />
                   </button>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { collection, query, getDocs, onSnapshot } from "@firebase/firestore";
 import { db } from "@/lib/firebase";
 import useAuth from "./useAuth";
-import Role from "@/lib/interfaces/role";
+import { Role } from "@/lib/interfaces";
 
 export default function useApps() {
   const { isLoggedIn, user } = useAuth();

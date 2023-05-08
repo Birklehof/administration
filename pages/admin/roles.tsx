@@ -3,7 +3,6 @@ import Head from "@/components/Head";
 import Loading from "@/components/Loading";
 import useAuth from "@/lib/hooks/useAuth";
 import Icon from "@/components/Icon";
-import Link from "next/link";
 import useApps from "@/lib/hooks/useApps";
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
