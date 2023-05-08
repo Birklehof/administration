@@ -1,72 +1,52 @@
-import { useEffect, useState } from "react";
-import Head from "@/components/Head";
 import Loading from "@/components/Loading";
 import useAuth from "@/lib/hooks/useAuth";
-import Icon from "@/components/Icon";
-import { Staff, Student } from "@/lib/interfaces";
-import useRemoteConfig from "@/lib/hooks/useRemoteConfig";
+import Head from "@/components/Head";
+import { useEffect, useState } from "react";
 import useCollectionAsList from "@/lib/hooks/useCollectionAsList";
+import { Runner } from "@/lib/interfaces";
+import Icon from "@/components/Icon";
+import { useRouter } from "next/router";
+import useRemoteConfig from "@/lib/hooks/useRemoteConfig";
+import Link from "next/link";
 import ListItem from "@/components/ListItem";
+import { deleteRunner } from "@/lib/firebaseUtils";
 import { themedPromiseToast } from "@/lib/utils";
-import { deleteUser } from "@/lib/firebaseUtils";
 
-interface StudentOrStaff {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  class?: string;
-  house?: string;
-}
-
-export default function AdminUsers() {
+export default function Admin24StundenLauf() {
+  const router = useRouter();
+  const [runners, runnersLoading, runnersError] = useCollectionAsList<Runner>(
+    "/apps/24-stunden-lauf/runners"
+  );
   const { isLoggedIn, user } = useAuth();
-  const [students, studentsLoading, studentsError] =
-    useCollectionAsList<Student>("students");
-  const [staff, staffLoading, staffError] = useCollectionAsList<Staff>("staff");
-  const users = [...students, ...staff] as StudentOrStaff[];
   const { classes, houses } = useRemoteConfig();
 
   const [filterName, setFilterName] = useState("");
-
   const [filterType, setFilterType] = useState("");
   const [filterClasses, setFilterClasses] = useState("");
   const [filterHouse, setFilterHouse] = useState("");
 
-  useEffect(() => {
-    if (!isLoggedIn) {
-      return;
-    }
-  }, [isLoggedIn]);
-
-  if (!user || staffLoading || studentsLoading) {
-    return <Loading />;
-  }
-
-  function filter(user: StudentOrStaff): boolean {
+  function filter(runner: Runner): boolean {
     if (filterType) {
-      if (filterType === "student" && !user.email.endsWith("@s.birklehof.de")) {
+      if (filterType === "student" && runner.type !== "student") {
         return false;
       }
-      if (filterType === "staff" && !user.email.endsWith("@birklehof.de")) {
+      if (filterType === "staff" && runner.type !== "staff") {
         return false;
       }
       if (
         filterType === "other" &&
-        (user.email.endsWith("@birklehof.de") ||
-          user.email.endsWith("@s.birklehof.de"))
+        (runner.type === "student" || runner.type === "staff")
       ) {
         return false;
       }
     }
 
     if (filterClasses || filterHouse) {
-      if ("class" in user && "house" in user) {
-        const student = user as Student;
-        if (filterClasses && student.class !== filterClasses) {
+      if (runner.type === "student") {
+        if (filterClasses && runner.class !== filterClasses) {
           return false;
         }
-        if (filterHouse && student.house !== filterHouse) {
+        if (filterHouse && runner.house !== filterHouse) {
           return false;
         }
       } else {
@@ -74,17 +54,32 @@ export default function AdminUsers() {
       }
     }
 
-    return (
-      !filterName || (user.firstName + " " + user.lastName).includes(filterName)
-    );
+    return !filterName || runner.name?.includes(filterName);
+  }
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      return;
+    }
+    console.log(runners);
+  }, [isLoggedIn]);
+
+  if (!user || runnersLoading) {
+    return <Loading />;
   }
 
   return (
     <>
-      <Head title="Nutzerverwaltung" />
+      <Head title="24 Stunden Lauf" />
       <main className="main">
         <div className="searchbox">
           <div className="input-elements-container">
+            <Link
+              href="/admin/24-stunden-lauf/"
+              className="btn btn-ghost btn-circle btn-sm"
+            >
+              <Icon name="ArrowLeftIcon" />
+            </Link>
             <input
               type="text"
               placeholder="Suchen ..."
@@ -110,7 +105,7 @@ export default function AdminUsers() {
                   <option value={""}>Alle Typen</option>
                   <option value={"student"}>Schüler</option>
                   <option value={"staff"}>Lehrer</option>
-                  <option value={"other"}>Sonstige</option>
+                  <option value={"other"}>Gäste</option>
                 </select>
                 <select
                   className="select select-bordered select-sm grow"
@@ -138,33 +133,39 @@ export default function AdminUsers() {
           </div>
         </div>
         <div className="vertical-list !pt-20 !gap-2">
-          {users
-            .filter((user) => {
-              return filter(user);
+          {runners
+            .filter((runner) => {
+              return filter(runner);
             })
-            .map((user) => {
+            .map((runner) => {
               return (
                 <ListItem
-                  key={user.id}
-                  mainContent={user.firstName + " " + user.lastName}
-                  secondaryContent={user.email}
+                  key={runner.id}
+                  number={runner.number}
+                  mainContent={runner.name}
+                  secondaryContent={runner.email}
                   badges={
-                    user.class && user.house ? [user.class, user.house] : []
+                    runner.type === "student"
+                      ? [
+                          "Schüler",
+                          runner.class as string,
+                          runner.house as string,
+                        ]
+                      : runner.type === "staff"
+                      ? ["Lehrer"]
+                      : ["Gast"]
                   }
                 >
                   <button
                     className="btn btn-outline btn-error btn-square btn-sm"
                     onClick={async () =>
-                      await themedPromiseToast(
-                        deleteUser(user.id, user.email),
-                        {
-                          pending: "Lösche Nutzer ...",
-                          success: "Nutzer gelöscht",
-                          error: "Nutzer konnte nicht gelöscht werden",
-                        }
-                      )
+                      await themedPromiseToast(deleteRunner(runner.id), {
+                        pending: "Lösche Läufer...",
+                        success: "Läufer gelöscht.",
+                        error: "Läufer konnte nicht gelöscht werden.",
+                      })
                     }
-                    aria-label="Nutzer löschen"
+                    aria-label="Läufer löschen"
                   >
                     <Icon name="TrashIcon" />
                   </button>
@@ -172,7 +173,7 @@ export default function AdminUsers() {
               );
             })}
           <div className="w-full text-sm text-center">
-            Keine weiteren Nutzer
+            Keine weiteren Läufer
           </div>
         </div>
       </main>

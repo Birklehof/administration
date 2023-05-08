@@ -13,12 +13,22 @@ import {
 import { db } from "@/lib/firebase";
 import { Runner, Staff, Student, Lap } from "@/lib/interfaces";
 import { themedPromiseToast } from "@/lib/utils";
-import { useDocumentData } from "react-firebase-hooks/firestore";
+import useCollectionCount from "@/lib/hooks/useCollectionCount";
+import useCollectionAsList from "@/lib/hooks/useCollectionAsList";
+import Link from "next/link";
+import Icon from "@/components/Icon";
+import { deleteArchive } from "@/lib/firebaseUtils";
+import ListItem from "@/components/ListItem";
 
 export default function AdminIndex() {
   const { isLoggedIn, user } = useAuth();
-  const [value, loading, error, snapshot] = useDocumentData(
-    doc(db, "apps", "24-stunden-lauf")
+  const [runnerCount, runnerCountLoading, runnerCountError] =
+    useCollectionCount("apps/24-stunden-lauf/runners");
+  const [lapsCount, lapsCountLoading, lapsCountError] = useCollectionCount(
+    "apps/24-stunden-lauf/laps"
+  );
+  const [archives, archivesLoading, archivesError] = useCollectionAsList<any>(
+    "/apps/24-stunden-lauf/archive"
   );
 
   async function addStudentsToRunners(): Promise<number> {
@@ -136,7 +146,7 @@ export default function AdminIndex() {
     }
   }, [isLoggedIn]);
 
-  if (!user || loading) {
+  if (!user || runnerCountLoading || lapsCountLoading || archivesLoading) {
     return <Loading />;
   }
 
@@ -144,75 +154,145 @@ export default function AdminIndex() {
     <>
       <Head title="24 Stunden Lauf" />
       <main className="main">
-        {JSON.stringify(snapshot?.data())}
-        <button
-          onClick={async () =>
-            await themedPromiseToast(addStudentsToRunners, {
-              pending: "Füge Personal zu Läufern hinzu...",
-              success: {
-                render: (success) => {
-                  return `${success.data} Läufer wurden erfolgreich hinzugefügt.`;
-                },
-              },
-              error: {
-                render: (error) => {
-                  if (error instanceof Error) {
-                    return error.message;
+        <div className="vertical-list">
+          <div className="large-card">
+            <div className="card-body">
+              <div className="flex flex-wrap items-center justify-evenly">
+                <div className="stat text-center w-full md:w-1/3">
+                  <div className="stat-value">{runnerCount}</div>
+                  <div className="stat-desc">Läufer</div>
+                </div>
+                <div className="stat text-center w-full md:w-1/3">
+                  <div className="stat-value">{lapsCount}</div>
+                  <div className="stat-desc">Runden gesamt</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="large-card">
+            <div className="card-body">
+              <h1 className="card-title">Aktuelle Veranstaltung</h1>
+              <Link
+                href="/admin/24-stunden-lauf/runners"
+                className="btn btn-outline btn-primary btn-square btn-sm mr-1"
+                aria-label="Läufer einsehen"
+              >
+                <Icon name="EyeIcon" />
+              </Link>
+              <button
+                onClick={async () =>
+                  await themedPromiseToast(addStudentsToRunners, {
+                    pending: "Füge Personal zu Läufern hinzu...",
+                    success: {
+                      render: (success) => {
+                        return `${success.data} Läufer wurden erfolgreich hinzugefügt.`;
+                      },
+                    },
+                    error: {
+                      render: (error) => {
+                        if (error instanceof Error) {
+                          return error.message;
+                        }
+                        return "Unbekannter Fehler";
+                      },
+                    },
+                  })
+                }
+                className="btn btn-primary btn-outline btn-sm"
+                aria-label="Schüler als Läufer hinzufügen"
+              >
+                Schüler als Läufer hinzufügen
+              </button>
+              <button
+                onClick={async () =>
+                  await themedPromiseToast(addStaffToRunners, {
+                    pending: "Füge Personal zu Läufern hinzu...",
+                    success: {
+                      render: (success) => {
+                        return `${success.data} Läufer wurden erfolgreich hinzugefügt.`;
+                      },
+                    },
+                    error: {
+                      render: (error) => {
+                        if (error instanceof Error) {
+                          return error.message;
+                        }
+                        return "Unbekannter Fehler";
+                      },
+                    },
+                  })
+                }
+                className="btn btn-primary btn-outline btn-sm"
+                aria-label="Add staff to runners"
+              >
+                Personal als Läufer hinzufügen
+              </button>
+              <button
+                onClick={async () =>
+                  await themedPromiseToast(archive, {
+                    pending: "Archiviere Läufer...",
+                    success: "Läufer wurden erfolgreich archiviert.",
+                    error: {
+                      render: (error) => {
+                        if (error instanceof Error) {
+                          return error.message;
+                        }
+                        return "Unbekannter Fehler";
+                      },
+                    },
+                  })
+                }
+                className="btn btn-primary btn-outline btn-sm"
+                aria-label="Archivieren"
+              >
+                Archivieren
+              </button>
+            </div>
+          </div>
+
+          {archives.map((archive) => {
+            return (
+              <ListItem
+                key={archive.id}
+                mainContent={
+                  "Lauf " + new Date(archive.timestamp).getFullYear()
+                }
+                secondaryContent={
+                  new Date(archive.timestamp).toLocaleDateString("de-DE") +
+                  " " +
+                  new Date(archive.timestamp).toLocaleTimeString("de-DE")
+                }
+              >
+                <Link
+                  href={`/admin/24-stunden-lauf/${archive.id}`}
+                  className="btn btn-outline btn-primary btn-square btn-sm mr-1"
+                  aria-label="Läufer einsehen"
+                >
+                  <Icon name="EyeIcon" />
+                </Link>
+                <button
+                  className="btn btn-outline btn-error btn-square btn-sm"
+                  onClick={async () =>
+                    themedPromiseToast(deleteArchive(archive.id), {
+                      pending: "Lösche Archiv...",
+                      success: "Archiv wurde erfolgreich gelöscht.",
+                      error: {
+                        render: (error) => {
+                          if (error instanceof Error) {
+                            return error.message;
+                          }
+                          return "Unbekannter Fehler";
+                        },
+                      },
+                    })
                   }
-                  return "Unbekannter Fehler";
-                },
-              },
-            })
-          }
-          className="btn btn-primary btn-sm"
-          aria-label="Add students to runners"
-        >
-          Add students to runners
-        </button>
-        <button
-          onClick={async () =>
-            await themedPromiseToast(addStaffToRunners, {
-              pending: "Füge Personal zu Läufern hinzu...",
-              success: {
-                render: (success) => {
-                  return `${success.data} Läufer wurden erfolgreich hinzugefügt.`;
-                },
-              },
-              error: {
-                render: (error) => {
-                  if (error instanceof Error) {
-                    return error.message;
-                  }
-                  return "Unbekannter Fehler";
-                },
-              },
-            })
-          }
-          className="btn btn-primary btn-sm"
-          aria-label="Add staff to runners"
-        >
-          Add staff to runners
-        </button>
-        <button
-          onClick={async () =>
-            await themedPromiseToast(archive, {
-              pending: "Archiviere Läufer...",
-              success: "Läufer wurden erfolgreich archiviert.",
-              error: {
-                render: (error) => {
-                  if (error instanceof Error) {
-                    return error.message;
-                  }
-                  return "Unbekannter Fehler";
-                },
-              },
-            })
-          }
-          className="btn btn-primary btn-sm"
-          aria-label="Archive runners"
-        >
-          Archive runners
-        </button>
+                >
+                  <Icon name="TrashIcon" />
+                </button>
+              </ListItem>
+            );
+          })}
+        </div>
       </main>
     </>
   );

@@ -8,6 +8,7 @@ import { deleteDoc, doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { validateEmail } from "@/lib/utils";
 import { Role } from "@/lib/interfaces";
+import ListItem from "@/components/ListItem";
 
 export default function AdminRoles() {
   const { isLoggedIn, user } = useAuth();
@@ -87,18 +88,11 @@ export default function AdminRoles() {
         </div>
         <div className="vertical-list !pt-20 !gap-2">
           {roles[activeTab]?.map((role: Role) => (
-            <div key={role.email} className="list-item">
-              <span className="whitespace-nowrap overflow-hidden pr-1">
-                <span className="overflow-hidden text-ellipsis font-semibold">
-                  {role.email}
-                </span>
-              </span>
-              <span className="whitespace-nowrap overflow-hidden">
-                <span className="overflow-hidden text-ellipsis">
-                  {role.role}
-                </span>
-              </span>
-              <div className="spacer" />
+            <ListItem
+              key={role.email}
+              mainContent={role.email}
+              secondaryContent={role.role}
+            >
               <button
                 className="btn btn-outline btn-warning btn-square btn-sm mr-1"
                 aria-label="Berechtigung bearbeiten"
@@ -116,7 +110,7 @@ export default function AdminRoles() {
               >
                 <Icon name="TrashIcon" />
               </button>
-            </div>
+            </ListItem>
           ))}
           {activeTab !== "" && (
             <>
