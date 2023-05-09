@@ -9,6 +9,7 @@ import useCollectionAsList from "@/lib/hooks/useCollectionAsList";
 import ListItem from "@/components/ListItem";
 import { themedPromiseToast } from "@/lib/utils";
 import { deleteUser } from "@/lib/firebaseUtils";
+import SearchBar from "@/components/SearchBar";
 
 interface StudentOrStaff {
   id: string;
@@ -83,60 +84,38 @@ export default function AdminUsers() {
     <>
       <Head title="Nutzerverwaltung" />
       <main className="main">
-        <div className="searchbox">
-          <div className="input-elements-container">
-            <input
-              type="text"
-              placeholder="Suchen ..."
-              onChange={(e) => setFilterName(e.target.value)}
-            />
-            <div className="dropdown dropdown-bottom dropdown-end">
-              <label
-                tabIndex={0}
-                className="btn btn-circle btn-ghost btn-sm"
-                aria-label="Filtern"
-              >
-                <Icon name="AdjustmentsIcon" />
-              </label>
-              <div
-                tabIndex={0}
-                className="dropdown-content menu p-3 shadow bg-base-100 rounded-box flex flex-col gap-3"
-              >
-                <select
-                  className="select select-bordered select-sm grow"
-                  onChange={(e) => setFilterType(e.target.value)}
-                  value={filterType}
-                >
-                  <option value={""}>Alle Typen</option>
-                  <option value={"student"}>Schüler</option>
-                  <option value={"staff"}>Lehrer</option>
-                  <option value={"other"}>Sonstige</option>
-                </select>
-                <select
-                  className="select select-bordered select-sm grow"
-                  onChange={(e) => setFilterClasses(e.target.value)}
-                  value={filterClasses}
-                >
-                  <option value={""}>Alle Klassen</option>
-                  {classes.map((_class) => (
-                    <option key={_class}>{_class}</option>
-                  ))}
-                </select>
-
-                <select
-                  className="select select-bordered select-sm grow"
-                  onChange={(e) => setFilterHouse(e.target.value)}
-                  value={filterHouse}
-                >
-                  <option value={""}>Alle Häuser</option>
-                  {houses.map((house) => (
-                    <option key={house}>{house}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
+        <SearchBar
+          searchValue={filterName}
+          setSearchValue={setFilterName}
+          filters={[
+            {
+              filerValue: filterType,
+              setFilterValue: setFilterType,
+              filterOptions: [
+                { value: "", label: "Alle Typen" },
+                { value: "student", label: "Schüler" },
+                { value: "staff", label: "Lehrer" },
+                { value: "other", label: "Sonstige" },
+              ],
+            },
+            {
+              filerValue: filterClasses,
+              setFilterValue: setFilterClasses,
+              filterOptions: [
+                { value: "", label: "Alle Klassen" },
+                ...classes.map((_class) => ({ value: _class, label: _class })),
+              ],
+            },
+            {
+              filerValue: filterHouse,
+              setFilterValue: setFilterHouse,
+              filterOptions: [
+                { value: "", label: "Alle Häuser" },
+                ...houses.map((house) => ({ value: house, label: house })),
+              ],
+            },
+          ]}
+        />
         <div className="vertical-list !pt-20 !gap-2">
           {users
             .filter((user) => {
