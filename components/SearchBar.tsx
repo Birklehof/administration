@@ -21,17 +21,17 @@ export default function SearchBar({
   backLink,
 }: SearchBarProps) {
   return (
-    <div className="menu rounded-box menu-horizontal z-40 w-full max-w-xl bg-base-100 p-2 shadow-xl">
-      <div className="form-control flex w-full flex-row justify-between gap-3">
+    <div className="search-bar">
+      <div className="form-control flex grow flex-row justify-between gap-3">
         {backLink && (
-          <Link href={backLink} className="btn-ghost btn-sm btn-square btn">
+          <Link href={backLink} className="btn-ghost btn-square btn-sm btn">
             <Icon name="ArrowLeftIcon" />
           </Link>
         )}
         <input
           className="input-bordered input rounded-box input-sm w-10 grow"
           type="text"
-          placeholder="Suchen..."
+          placeholder="Suchen ..."
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
@@ -39,7 +39,7 @@ export default function SearchBar({
           <div className="dropdown-bottom dropdown-end dropdown">
             <label
               tabIndex={0}
-              className="btn-ghost btn-sm btn-square btn"
+              className="btn-ghost btn-square btn-sm btn"
               aria-label="Filtern"
             >
               <Icon name="AdjustmentsIcon" />

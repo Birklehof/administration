@@ -174,7 +174,7 @@ export default function AdminIndex() {
               <h1 className="card-title">Aktuelle Veranstaltung</h1>
               <Link
                 href="/admin/24-stunden-lauf/runners"
-                className="btn-outline btn-primary btn-sm btn-square btn mr-1"
+                className="btn-outline btn-primary btn-square btn-sm btn mr-1"
                 aria-label="Läufer einsehen"
               >
                 <Icon name="EyeIcon" />
@@ -188,14 +188,7 @@ export default function AdminIndex() {
                         return `${success.data} Läufer wurden erfolgreich hinzugefügt.`;
                       },
                     },
-                    error: {
-                      render: (error) => {
-                        if (error instanceof Error) {
-                          return error.message;
-                        }
-                        return 'Unbekannter Fehler';
-                      },
-                    },
+                    error: 'Fehler beim Hinzufügen der Läufer.',
                   })
                 }
                 className="btn-outline btn-primary btn-sm btn"
@@ -212,14 +205,7 @@ export default function AdminIndex() {
                         return `${success.data} Läufer wurden erfolgreich hinzugefügt.`;
                       },
                     },
-                    error: {
-                      render: (error) => {
-                        if (error instanceof Error) {
-                          return error.message;
-                        }
-                        return 'Unbekannter Fehler';
-                      },
-                    },
+                    error: 'Fehler beim Hinzufügen der Läufer.',
                   })
                 }
                 className="btn-outline btn-primary btn-sm btn"
@@ -232,14 +218,7 @@ export default function AdminIndex() {
                   await themedPromiseToast(archive, {
                     pending: 'Archiviere Läufer...',
                     success: 'Läufer wurden erfolgreich archiviert.',
-                    error: {
-                      render: (error) => {
-                        if (error instanceof Error) {
-                          return error.message;
-                        }
-                        return 'Unbekannter Fehler';
-                      },
-                    },
+                    error: 'Fehler beim Hinzufügen der Läufer.',
                   })
                 }
                 className="btn-outline btn-primary btn-sm btn"
@@ -265,13 +244,13 @@ export default function AdminIndex() {
               >
                 <Link
                   href={`/admin/24-stunden-lauf/${archive.id}`}
-                  className="btn-outline btn-primary btn-sm btn-square btn mr-1"
+                  className="btn-outline btn-primary btn-square btn-sm btn mr-1"
                   aria-label="Läufer einsehen"
                 >
                   <Icon name="EyeIcon" />
                 </Link>
                 <button
-                  className="btn-outline btn-error btn-sm btn-square btn"
+                  className="btn-outline btn-error btn-square btn-sm btn"
                   onClick={async () =>
                     themedPromiseToast(deleteArchive(archive.id), {
                       pending: 'Lösche Archiv...',

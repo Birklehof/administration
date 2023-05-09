@@ -7,7 +7,6 @@ import { Runner } from '@/lib/interfaces';
 import Icon from '@/components/Icon';
 import { useRouter } from 'next/router';
 import useRemoteConfig from '@/lib/hooks/useRemoteConfig';
-import Link from 'next/link';
 import ListItem from '@/components/ListItem';
 import { deleteRunner } from '@/lib/firebaseUtils';
 import { themedPromiseToast } from '@/lib/utils';
@@ -106,7 +105,7 @@ export default function Admin24StundenLauf() {
             },
           ]}
         />
-        <div className="vertical-list !gap-2 !pt-20">
+        <div className="vertical-list">
           {runners
             .filter((runner) => {
               return filter(runner);
@@ -131,7 +130,7 @@ export default function Admin24StundenLauf() {
                   }
                 >
                   <button
-                    className="btn-outline btn-error btn-sm btn-square btn"
+                    className="btn-outline btn-error btn-square btn-sm btn"
                     onClick={async () =>
                       await themedPromiseToast(deleteRunner(runner.id), {
                         pending: 'Lösche Läufer...',

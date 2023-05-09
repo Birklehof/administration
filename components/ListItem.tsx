@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
 
 interface ListItemProps {
   number?: number;
@@ -16,26 +16,22 @@ export default function ListItem({
   children,
 }: ListItemProps) {
   return (
-    <div className="card max-w-xl shadow-md bg-base-100 rounded-box flex flex-col justify-start w-full gap-0 text-lg p-1 pl-3">
-      <div className="flex flex-row items-center">
+    <div className="card rounded-box flex flex-col justify-start gap-0 bg-base-100 p-1 pl-3 shadow-md">
+      <div className="flex w-full flex-row items-center">
         {number != undefined && (
           <>
             <span className="opacity-60">
-              {"0".repeat(3 - number.toString().length)}
+              {'0'.repeat(3 - number.toString().length)}
             </span>
             <span className="pr-1">{number}</span>
           </>
         )}
-        <span className="whitespace-nowrap overflow-hidden pr-1">
-          <span className="overflow-hidden text-ellipsis font-semibold">
-            {mainContent}
-          </span>
+        <span className="overflow-hidden text-ellipsis whitespace-nowrap pr-1 font-semibold">
+          {mainContent}
         </span>
         {secondaryContent && (
-          <span className="whitespace-nowrap overflow-hidden">
-            <span className="overflow-hidden text-ellipsis">
-              {secondaryContent}
-            </span>
+          <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+            {secondaryContent}
           </span>
         )}
         <div className="flex-grow" />
@@ -44,7 +40,7 @@ export default function ListItem({
       {(badges?.length || 0) > 0 && (
         <div className="flex flex-row gap-1 pb-1">
           {badges?.map((badge) => (
-            <span key={badge} className="badge badge-outline badge-success">
+            <span key={badge} className="badge-success badge-outline badge">
               {badge}
             </span>
           ))}

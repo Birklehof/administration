@@ -6,13 +6,16 @@ import Icon from '@/components/Icon';
 import useApps from '@/lib/hooks/useApps';
 import { deleteDoc, doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { validateEmail } from '@/lib/utils';
+import { themedPromiseToast, validateEmail } from '@/lib/utils';
 import { Role } from '@/lib/interfaces';
 import ListItem from '@/components/ListItem';
+import SearchBar from '@/components/SearchBar';
 
 export default function AdminRoles() {
   const { isLoggedIn, user } = useAuth();
   const { roles } = useApps();
+
+  const [filterName, setFilterName] = useState('');
   const [activeTab, setActiveTab] = useState('');
   const [newRoleEmail, setNewRoleEmail] = useState('');
   const [newRoleRole, setNewRoleRole] = useState('');
@@ -24,11 +27,18 @@ export default function AdminRoles() {
     }
   }, [isLoggedIn]);
 
+  useEffect(() => {
+    if (!submitting) {
+      setNewRoleEmail('');
+      setNewRoleRole('');
+    }
+  }, [activeTab]);
+
   if (!user || !roles) {
     return <Loading />;
   }
 
-  async function setRole() {
+  async function setRoleHandler() {
     if (submitting) {
       return;
     }
@@ -63,35 +73,28 @@ export default function AdminRoles() {
     <>
       <Head title="Rollenverwaltung" />
       <main className="main">
-        <div className="searchbox">
-          <div className="input-elements-container overflow-x-scroll">
-            <div className="tabs bg-base-100">
-              {Object.keys(roles).map((app) => (
-                <a
-                  key={app}
-                  className={
-                    activeTab === app
-                      ? 'tab tab-active tab-md rounded-full bg-primary font-semibold text-white'
-                      : 'tab tab-md'
-                  }
-                  onClick={() => {
-                    setNewRoleEmail('');
-                    setNewRoleRole('');
-                    setActiveTab(app);
-                  }}
-                >
-                  {app.charAt(0).toUpperCase() + app.slice(1)}
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div className="vertical-list !gap-2 !pt-20">
+        <SearchBar
+          searchValue={filterName}
+          setSearchValue={setFilterName}
+          filters={[
+            {
+              filerValue: activeTab,
+              setFilterValue: setActiveTab,
+              filterOptions: [{ value: '', label: 'Keine App' }].concat(
+                Object.keys(roles).map((app) => ({
+                  value: app,
+                  label: app.charAt(0).toUpperCase() + app.slice(1),
+                }))
+              ),
+            },
+          ]}
+        />
+        <div className="vertical-list">
           {roles[activeTab]?.map((role: Role) => (
             <ListItem
               key={role.email}
               mainContent={role.email}
-              secondaryContent={role.role}
+              badges={[role.role]}
             >
               <button
                 className="btn-outline btn-warning btn-square btn-sm btn mr-1"
@@ -105,7 +108,13 @@ export default function AdminRoles() {
               </button>
               <button
                 className="btn-outline btn-error btn-square btn-sm btn"
-                onClick={async () => await deleteRole(role.email)}
+                onClick={async () =>
+                  await themedPromiseToast(deleteRole(role.email), {
+                    pending: 'Berechtigung wird gelöscht ...',
+                    success: 'Berechtigung gelöscht.',
+                    error: 'Berechtigung konnte nicht gelöscht werden.',
+                  })
+                }
                 aria-label="Berechtigung löschen"
               >
                 <Icon name="TrashIcon" />
@@ -114,20 +123,18 @@ export default function AdminRoles() {
           ))}
           {activeTab !== '' && (
             <>
-              <div className="divider mx-auto w-full max-w-xl">
-                Berechtigungen hinzufügen oder bearbeiten
-              </div>
-              <div className="menu menu-horizontal w-full max-w-xl rounded-full bg-base-100 p-2">
-                <div className="input-elements-container">
+              <div className="divider w-full">Berechtigungen bearbeiten</div>
+              <div className="large-card mb-10">
+                <div className="card-body">
                   <input
                     value={newRoleEmail}
                     onChange={(e) => setNewRoleEmail(e.target.value)}
                     type="text"
                     placeholder="E-Mail Adresse"
-                    className="font-bold"
+                    className="input-bordered input"
                   />
                   <select
-                    className="select-bordered select select-sm rounded-full"
+                    className="select-bordered select"
                     value={newRoleRole}
                     onChange={(e) => setNewRoleRole(e.target.value)}
                     aria-label="Rolle"
@@ -139,9 +146,17 @@ export default function AdminRoles() {
                     <option value="assistant">Assistent</option>
                   </select>
                   <button
-                    className="btn-ghost btn-sm btn-circle btn text-success"
+                    className={`btn-outline btn-success btn ${
+                      submitting ? 'loading' : ''
+                    }`}
                     aria-label="Berechtigung hinzufügen"
-                    onClick={async () => await setRole()}
+                    onClick={async () =>
+                      await themedPromiseToast(setRoleHandler(), {
+                        pending: 'Berechtigung wird gespeichert ...',
+                        success: 'Berechtigung gespeichert.',
+                        error: 'Berechtigung konnte nicht gespeichert werden.',
+                      })
+                    }
                     disabled={
                       submitting ||
                       !newRoleEmail ||
@@ -151,21 +166,16 @@ export default function AdminRoles() {
                   >
                     {roles[activeTab]?.find(
                       (role: Role) => role.email === newRoleEmail
-                    ) ? (
-                      <Icon
-                        name="PencilIcon"
-                        aria-label="Berechtigung hinzugefügt"
-                      />
-                    ) : (
-                      <Icon name="UserAddIcon" />
-                    )}
+                    )
+                      ? 'Rolle bearbeiten'
+                      : 'Rolle hinzufügen'}
                   </button>
                 </div>
               </div>
             </>
           )}
           {activeTab === '' && (
-            <div className="w-full text-center text-sm">
+            <div className="text-center text-sm">
               Wähle eine App aus, um ihre Berechtigungen zu verwalten.
             </div>
           )}

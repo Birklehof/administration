@@ -108,7 +108,7 @@ export default function Admin24StundenLauf() {
             },
           ]}
         />
-        <div className="vertical-list !gap-2 !pt-20">
+        <div className="vertical-list">
           {runners
             .filter((runner) => {
               return filter(runner);

@@ -116,7 +116,7 @@ export default function AdminUsers() {
             },
           ]}
         />
-        <div className="vertical-list !gap-2 !pt-20">
+        <div className="vertical-list">
           {users
             .filter((user) => {
               return filter(user);
@@ -132,7 +132,7 @@ export default function AdminUsers() {
                   }
                 >
                   <button
-                    className="btn-outline btn-error btn-square btn-sm btn"
+                    className="btn-outline btn-error btn-sm btn-square btn"
                     onClick={async () =>
                       await themedPromiseToast(
                         deleteUser(user.id, user.email),
