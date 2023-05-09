@@ -1,11 +1,11 @@
-import Head from "next/head";
+import Head from 'next/head';
 
 interface HeadProps {
   title?: string;
 }
 
 export default function Header({ title }: HeadProps) {
-  const pageTitle = title ? `Administration | ${title}` : "Administration";
+  const pageTitle = title ? `Administration | ${title}` : 'Administration';
 
   return (
     <>

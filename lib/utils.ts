@@ -1,4 +1,4 @@
-import { ToastOptions, ToastPromiseParams, toast } from "react-toastify";
+import { ToastOptions, ToastPromiseParams, toast } from 'react-toastify';
 
 export function validateEmail(email: string): boolean {
   var re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,5}$/;
@@ -20,9 +20,9 @@ export function themedPromiseToast(
     {
       ...options,
       theme:
-        localStorage.getItem("usehooks-ts-dark-mode") === "true"
-          ? "dark"
-          : "light",
+        localStorage.getItem('usehooks-ts-dark-mode') === 'true'
+          ? 'dark'
+          : 'light',
     }
   );
 }

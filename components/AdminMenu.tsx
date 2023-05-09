@@ -1,4 +1,4 @@
-import Menu from "./Menu";
+import Menu from './Menu';
 
 export default function AdminMenu() {
   return (
@@ -6,24 +6,24 @@ export default function AdminMenu() {
       <Menu
         navItems={[
           {
-            name: "Home",
-            href: "/admin",
-            icon: "HomeIcon",
+            name: 'Home',
+            href: '/admin',
+            icon: 'HomeIcon',
           },
           {
-            name: "Nutzer",
-            href: "/admin/users",
-            icon: "UserGroupIcon",
+            name: 'Nutzer',
+            href: '/admin/users',
+            icon: 'UserGroupIcon',
           },
           {
-            name: "Berechtigungen",
-            href: "/admin/roles",
-            icon: "KeyIcon",
+            name: 'Berechtigungen',
+            href: '/admin/roles',
+            icon: 'KeyIcon',
           },
           {
-            name: "24 Stunden Lauf",
-            href: "/admin/24-stunden-lauf",
-            icon: "FlagIcon",
+            name: '24 Stunden Lauf',
+            href: '/admin/24-stunden-lauf',
+            icon: 'FlagIcon',
           },
         ]}
       />

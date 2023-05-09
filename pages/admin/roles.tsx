@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react";
-import Head from "@/components/Head";
-import Loading from "@/components/Loading";
-import useAuth from "@/lib/hooks/useAuth";
-import Icon from "@/components/Icon";
-import useApps from "@/lib/hooks/useApps";
-import { deleteDoc, doc, setDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { validateEmail } from "@/lib/utils";
-import { Role } from "@/lib/interfaces";
-import ListItem from "@/components/ListItem";
+import { useEffect, useState } from 'react';
+import Head from '@/components/Head';
+import Loading from '@/components/Loading';
+import useAuth from '@/lib/hooks/useAuth';
+import Icon from '@/components/Icon';
+import useApps from '@/lib/hooks/useApps';
+import { deleteDoc, doc, setDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { validateEmail } from '@/lib/utils';
+import { Role } from '@/lib/interfaces';
+import ListItem from '@/components/ListItem';
 
 export default function AdminRoles() {
   const { isLoggedIn, user } = useAuth();
   const { roles } = useApps();
-  const [activeTab, setActiveTab] = useState("");
-  const [newRoleEmail, setNewRoleEmail] = useState("");
-  const [newRoleRole, setNewRoleRole] = useState("");
+  const [activeTab, setActiveTab] = useState('');
+  const [newRoleEmail, setNewRoleEmail] = useState('');
+  const [newRoleRole, setNewRoleRole] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -35,12 +35,12 @@ export default function AdminRoles() {
 
     setSubmitting(true);
 
-    await setDoc(doc(db, "apps", activeTab, "roles", newRoleEmail), {
+    await setDoc(doc(db, 'apps', activeTab, 'roles', newRoleEmail), {
       role: newRoleRole,
     })
       .then(() => {
-        setNewRoleEmail("");
-        setNewRoleRole("");
+        setNewRoleEmail('');
+        setNewRoleRole('');
       })
       .finally(() => {
         setSubmitting(false);
@@ -54,7 +54,7 @@ export default function AdminRoles() {
 
     setSubmitting(true);
 
-    await deleteDoc(doc(db, "apps", activeTab, "roles", email)).finally(() => {
+    await deleteDoc(doc(db, 'apps', activeTab, 'roles', email)).finally(() => {
       setSubmitting(false);
     });
   }
@@ -71,12 +71,12 @@ export default function AdminRoles() {
                   key={app}
                   className={
                     activeTab === app
-                      ? "tab tab-md tab-active bg-primary rounded-full text-white font-semibold"
-                      : "tab tab-md"
+                      ? 'tab tab-active tab-md rounded-full bg-primary font-semibold text-white'
+                      : 'tab tab-md'
                   }
                   onClick={() => {
-                    setNewRoleEmail("");
-                    setNewRoleRole("");
+                    setNewRoleEmail('');
+                    setNewRoleRole('');
                     setActiveTab(app);
                   }}
                 >
@@ -86,7 +86,7 @@ export default function AdminRoles() {
             </div>
           </div>
         </div>
-        <div className="vertical-list !pt-20 !gap-2">
+        <div className="vertical-list !gap-2 !pt-20">
           {roles[activeTab]?.map((role: Role) => (
             <ListItem
               key={role.email}
@@ -94,7 +94,7 @@ export default function AdminRoles() {
               secondaryContent={role.role}
             >
               <button
-                className="btn btn-outline btn-warning btn-square btn-sm mr-1"
+                className="btn-outline btn-warning btn-square btn-sm btn mr-1"
                 aria-label="Berechtigung bearbeiten"
                 onClick={() => {
                   setNewRoleEmail(role.email);
@@ -104,7 +104,7 @@ export default function AdminRoles() {
                 <Icon name="PencilIcon" />
               </button>
               <button
-                className="btn btn-outline btn-error btn-square btn-sm"
+                className="btn-outline btn-error btn-square btn-sm btn"
                 onClick={async () => await deleteRole(role.email)}
                 aria-label="Berechtigung löschen"
               >
@@ -112,12 +112,12 @@ export default function AdminRoles() {
               </button>
             </ListItem>
           ))}
-          {activeTab !== "" && (
+          {activeTab !== '' && (
             <>
-              <div className="divider w-full max-w-xl mx-auto">
+              <div className="divider mx-auto w-full max-w-xl">
                 Berechtigungen hinzufügen oder bearbeiten
               </div>
-              <div className="menu menu-horizontal bg-base-100 p-2 rounded-full w-full max-w-xl">
+              <div className="menu menu-horizontal w-full max-w-xl rounded-full bg-base-100 p-2">
                 <div className="input-elements-container">
                   <input
                     value={newRoleEmail}
@@ -127,7 +127,7 @@ export default function AdminRoles() {
                     className="font-bold"
                   />
                   <select
-                    className="select select-bordered rounded-full select-sm"
+                    className="select-bordered select select-sm rounded-full"
                     value={newRoleRole}
                     onChange={(e) => setNewRoleRole(e.target.value)}
                     aria-label="Rolle"
@@ -139,7 +139,7 @@ export default function AdminRoles() {
                     <option value="assistant">Assistent</option>
                   </select>
                   <button
-                    className="btn btn-ghost btn-circle btn-sm text-success"
+                    className="btn-ghost btn-sm btn-circle btn text-success"
                     aria-label="Berechtigung hinzufügen"
                     onClick={async () => await setRole()}
                     disabled={
@@ -164,8 +164,8 @@ export default function AdminRoles() {
               </div>
             </>
           )}
-          {activeTab === "" && (
-            <div className="w-full text-sm text-center">
+          {activeTab === '' && (
+            <div className="w-full text-center text-sm">
               Wähle eine App aus, um ihre Berechtigungen zu verwalten.
             </div>
           )}

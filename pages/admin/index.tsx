@@ -1,7 +1,7 @@
-import Loading from "@/components/Loading";
-import useAuth from "@/lib/hooks/useAuth";
-import Head from "@/components/Head";
-import { useEffect } from "react";
+import Loading from '@/components/Loading';
+import useAuth from '@/lib/hooks/useAuth';
+import Head from '@/components/Head';
+import { useEffect } from 'react';
 
 export default function AdminIndex() {
   const { isLoggedIn, user } = useAuth();

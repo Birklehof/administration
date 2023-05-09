@@ -1,49 +1,49 @@
-import Loading from "@/components/Loading";
-import useAuth from "@/lib/hooks/useAuth";
-import Head from "@/components/Head";
-import { useEffect, useState } from "react";
-import useCollectionAsList from "@/lib/hooks/useCollectionAsList";
-import { Runner } from "@/lib/interfaces";
-import Icon from "@/components/Icon";
-import { useRouter } from "next/router";
-import useRemoteConfig from "@/lib/hooks/useRemoteConfig";
-import Link from "next/link";
-import ListItem from "@/components/ListItem";
-import { deleteRunner } from "@/lib/firebaseUtils";
-import { themedPromiseToast } from "@/lib/utils";
-import SearchBar from "@/components/SearchBar";
+import Loading from '@/components/Loading';
+import useAuth from '@/lib/hooks/useAuth';
+import Head from '@/components/Head';
+import { useEffect, useState } from 'react';
+import useCollectionAsList from '@/lib/hooks/useCollectionAsList';
+import { Runner } from '@/lib/interfaces';
+import Icon from '@/components/Icon';
+import { useRouter } from 'next/router';
+import useRemoteConfig from '@/lib/hooks/useRemoteConfig';
+import Link from 'next/link';
+import ListItem from '@/components/ListItem';
+import { deleteRunner } from '@/lib/firebaseUtils';
+import { themedPromiseToast } from '@/lib/utils';
+import SearchBar from '@/components/SearchBar';
 
 export default function Admin24StundenLauf() {
   const router = useRouter();
   const [runners, runnersLoading, runnersError] = useCollectionAsList<Runner>(
-    "/apps/24-stunden-lauf/runners"
+    '/apps/24-stunden-lauf/runners'
   );
   const { isLoggedIn, user } = useAuth();
   const { classes, houses } = useRemoteConfig();
 
-  const [filterName, setFilterName] = useState("");
-  const [filterType, setFilterType] = useState("");
-  const [filterClasses, setFilterClasses] = useState("");
-  const [filterHouse, setFilterHouse] = useState("");
+  const [filterName, setFilterName] = useState('');
+  const [filterType, setFilterType] = useState('');
+  const [filterClasses, setFilterClasses] = useState('');
+  const [filterHouse, setFilterHouse] = useState('');
 
   function filter(runner: Runner): boolean {
     if (filterType) {
-      if (filterType === "student" && runner.type !== "student") {
+      if (filterType === 'student' && runner.type !== 'student') {
         return false;
       }
-      if (filterType === "staff" && runner.type !== "staff") {
+      if (filterType === 'staff' && runner.type !== 'staff') {
         return false;
       }
       if (
-        filterType === "other" &&
-        (runner.type === "student" || runner.type === "staff")
+        filterType === 'other' &&
+        (runner.type === 'student' || runner.type === 'staff')
       ) {
         return false;
       }
     }
 
     if (filterClasses || filterHouse) {
-      if (runner.type === "student") {
+      if (runner.type === 'student') {
         if (filterClasses && runner.class !== filterClasses) {
           return false;
         }
@@ -51,7 +51,7 @@ export default function Admin24StundenLauf() {
           return false;
         }
       } else {
-        return false || (filterHouse == "Extern (Kollegium)" && !filterClasses);
+        return false || (filterHouse == 'Extern (Kollegium)' && !filterClasses);
       }
     }
 
@@ -82,17 +82,17 @@ export default function Admin24StundenLauf() {
               filerValue: filterType,
               setFilterValue: setFilterType,
               filterOptions: [
-                { value: "", label: "Alle Typen" },
-                { value: "student", label: "Schüler" },
-                { value: "staff", label: "Lehrer" },
-                { value: "other", label: "Sonstige" },
+                { value: '', label: 'Alle Typen' },
+                { value: 'student', label: 'Schüler' },
+                { value: 'staff', label: 'Lehrer' },
+                { value: 'other', label: 'Sonstige' },
               ],
             },
             {
               filerValue: filterClasses,
               setFilterValue: setFilterClasses,
               filterOptions: [
-                { value: "", label: "Alle Klassen" },
+                { value: '', label: 'Alle Klassen' },
                 ...classes.map((_class) => ({ value: _class, label: _class })),
               ],
             },
@@ -100,13 +100,13 @@ export default function Admin24StundenLauf() {
               filerValue: filterHouse,
               setFilterValue: setFilterHouse,
               filterOptions: [
-                { value: "", label: "Alle Häuser" },
+                { value: '', label: 'Alle Häuser' },
                 ...houses.map((house) => ({ value: house, label: house })),
               ],
             },
           ]}
         />
-        <div className="vertical-list !pt-20 !gap-2">
+        <div className="vertical-list !gap-2 !pt-20">
           {runners
             .filter((runner) => {
               return filter(runner);
@@ -119,24 +119,24 @@ export default function Admin24StundenLauf() {
                   mainContent={runner.name}
                   secondaryContent={runner.email}
                   badges={
-                    runner.type === "student"
+                    runner.type === 'student'
                       ? [
-                          "Schüler",
+                          'Schüler',
                           runner.class as string,
                           runner.house as string,
                         ]
-                      : runner.type === "staff"
-                      ? ["Lehrer"]
-                      : ["Gast"]
+                      : runner.type === 'staff'
+                      ? ['Lehrer']
+                      : ['Gast']
                   }
                 >
                   <button
-                    className="btn btn-outline btn-error btn-square btn-sm"
+                    className="btn-outline btn-error btn-sm btn-square btn"
                     onClick={async () =>
                       await themedPromiseToast(deleteRunner(runner.id), {
-                        pending: "Lösche Läufer...",
-                        success: "Läufer gelöscht.",
-                        error: "Läufer konnte nicht gelöscht werden.",
+                        pending: 'Lösche Läufer...',
+                        success: 'Läufer gelöscht.',
+                        error: 'Läufer konnte nicht gelöscht werden.',
                       })
                     }
                     aria-label="Läufer löschen"
@@ -146,7 +146,7 @@ export default function Admin24StundenLauf() {
                 </ListItem>
               );
             })}
-          <div className="w-full text-sm text-center">
+          <div className="w-full text-center text-sm">
             Keine weiteren Läufer
           </div>
         </div>

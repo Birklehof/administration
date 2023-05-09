@@ -37,6 +37,7 @@
   @apply flex items-center flex-col overflow-y-auto h-screen w-full pt-2 pb-2 gap-2;
 }
 
+/*
 .searchbox {
   @apply menu menu-horizontal bg-base-100 p-2 rounded-full z-40 top-4 shadow-xl absolute w-[calc(100%-1rem)] max-w-xl;
 }
@@ -47,7 +48,7 @@
 
 .input-elements-container input[type="text"] {
   @apply input input-bordered input-sm rounded-full grow w-10;
-}
+}*/
 
 .alert {
   @apply px-1 py-1 pl-3;

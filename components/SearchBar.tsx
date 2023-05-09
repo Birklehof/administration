@@ -1,5 +1,5 @@
-import Link from "next/link";
-import Icon from "./Icon";
+import Link from 'next/link';
+import Icon from './Icon';
 
 interface SearchBarProps {
   searchValue: string;
@@ -21,24 +21,25 @@ export default function SearchBar({
   backLink,
 }: SearchBarProps) {
   return (
-    <div className="searchbox">
-      <div className="input-elements-container">
+    <div className="menu rounded-box menu-horizontal z-40 w-full max-w-xl bg-base-100 p-2 shadow-xl">
+      <div className="form-control flex w-full flex-row justify-between gap-3">
         {backLink && (
-          <Link href={backLink} className="btn btn-ghost btn-circle btn-sm">
+          <Link href={backLink} className="btn-ghost btn-sm btn-square btn">
             <Icon name="ArrowLeftIcon" />
           </Link>
         )}
         <input
+          className="input-bordered input rounded-box input-sm w-10 grow"
           type="text"
           placeholder="Suchen..."
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
         {filters && (
-          <div className="dropdown dropdown-bottom dropdown-end">
+          <div className="dropdown-bottom dropdown-end dropdown">
             <label
               tabIndex={0}
-              className="btn btn-circle btn-ghost btn-sm"
+              className="btn-ghost btn-sm btn-square btn"
               aria-label="Filtern"
             >
               <Icon name="AdjustmentsIcon" />
@@ -46,11 +47,11 @@ export default function SearchBar({
 
             <div
               tabIndex={0}
-              className="dropdown-content menu p-3 shadow bg-base-100 rounded-box flex flex-col gap-3"
+              className="dropdown-content menu rounded-box flex flex-col gap-3 bg-base-100 p-3 shadow"
             >
               {filters?.map((filter) => (
                 <select
-                  className="select select-bordered select-sm grow"
+                  className="select-bordered select select-sm grow"
                   onChange={(e) => filter.setFilterValue(e.target.value)}
                   value={filter.filerValue}
                 >
