@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { collection, query, getDocs, onSnapshot } from "@firebase/firestore";
-import { db } from "@/lib/firebase";
-import useAuth from "./useAuth";
-import { Role } from "@/lib/interfaces";
+import { useEffect, useState } from 'react';
+import { collection, query, getDocs, onSnapshot } from '@firebase/firestore';
+import { db } from '@/lib/firebase';
+import useAuth from './useAuth';
+import { Role } from '@/lib/interfaces';
 
 export default function useApps() {
   const { isLoggedIn, user } = useAuth();
@@ -15,7 +15,7 @@ export default function useApps() {
   }, [isLoggedIn, user]);
 
   async function syncApps() {
-    const q = query(collection(db, "/apps"));
+    const q = query(collection(db, '/apps'));
     const querySnapshot = await getDocs(q);
     const new_apps: string[] = [];
     const apps = querySnapshot.docs.map((doc) => {
