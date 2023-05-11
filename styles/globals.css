@@ -43,7 +43,7 @@
 }
 
 .vertical-list {
-  @apply grid w-full grid-cols-1 flex-col items-center gap-2 overflow-y-auto pb-[5.25rem] pt-2 md:pb-20;
+  @apply grid w-full grid-cols-1 flex-col items-center gap-2 overflow-y-auto pb-[5.25rem] pt-2 lg:pb-2;
 }
 
 .large-card {
