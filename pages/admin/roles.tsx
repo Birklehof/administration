@@ -94,7 +94,7 @@ export default function AdminRoles() {
             <ListItem
               key={role.email}
               mainContent={role.email}
-              badges={[role.role]}
+              badges={[role.role.charAt(0).toUpperCase() + role.role.slice(1)]}
             >
               <button
                 className="btn-outline btn-warning btn-square btn-sm btn mr-1"
