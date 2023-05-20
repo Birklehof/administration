@@ -73,71 +73,25 @@ export default function AdminIndex() {
     return staffSnapshot.size;
   }
 
-  async function archive() {
-    const timestamp = new Date().getTime();
-    const archive = {
-      timestamp: timestamp,
-    };
-
-    const newArchive = await addDoc(
-      collection(db, 'apps', '24-stunden-lauf', 'archive'),
-      archive
-    );
-
-    // Move all laps to archive
-    const lapsSnapshot = await getDocs(
-      collection(db, 'apps', '24-stunden-lauf', 'laps')
-    );
-    lapsSnapshot.forEach(async (lapDoc) => {
-      const lap = lapDoc.data() as Lap;
-
-      console.log(lap);
-
-      await setDoc(
-        doc(
-          db,
-          'apps',
-          '24-stunden-lauf',
-          'archive',
-          newArchive.id,
-          'laps',
-          lapDoc.id
-        ),
-        {
-          runnerId: lap.runnerId,
-          timestamp: new Date(lap.timestamp.seconds * 1000),
-        }
-      ).catch((error) => {
-        console.error('Error writing document: ', error);
-      });
-
-      await deleteDoc(doc(db, 'apps', '24-stunden-lauf', 'laps', lapDoc.id));
+  async function archiveHandler() {
+    // Make api request to /api/createLap
+    const res = await fetch('/api/archive', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: user?.accessToken || '',
+      },
     });
 
-    // Move all runners to archive
-    const runnersSnapshot = await getDocs(
-      collection(db, 'apps', '24-stunden-lauf', 'runners')
-    );
-    runnersSnapshot.forEach(async (runnerDoc) => {
-      const runner = runnerDoc.data() as Runner;
+    if (res.status == 200) {
+      return;
+    }
 
-      await setDoc(
-        doc(
-          db,
-          'apps',
-          '24-stunden-lauf',
-          'archive',
-          newArchive.id,
-          'runners',
-          runnerDoc.id
-        ),
-        runner
-      );
+    if (res.status == 401 || res.status == 403) {
+      throw new Error('Zugriff verweigert');
+    }
 
-      await deleteDoc(
-        doc(db, 'apps', '24-stunden-lauf', 'runners', runnerDoc.id)
-      );
-    });
+    throw new Error('Unbekannter Fehler');
   }
 
   useEffect(() => {
@@ -215,10 +169,17 @@ export default function AdminIndex() {
               </button>
               <button
                 onClick={async () =>
-                  await themedPromiseToast(archive, {
+                  await themedPromiseToast(archiveHandler, {
                     pending: 'Archiviere Läufer...',
                     success: 'Läufer wurden erfolgreich archiviert.',
-                    error: 'Fehler beim Hinzufügen der Läufer.',
+                    error: {
+                      render: ({ data }: any) => {
+                        if (data.message) {
+                          return data.message;
+                        }
+                        return 'Unbekannter Fehler';
+                      },
+                    },
                   })
                 }
                 className="btn-outline btn-primary btn-sm btn"
@@ -229,48 +190,50 @@ export default function AdminIndex() {
             </div>
           </div>
 
-          {archives.map((archive) => {
-            return (
-              <ListItem
-                key={archive.id}
-                mainContent={
-                  'Lauf ' + new Date(archive.timestamp).getFullYear()
-                }
-                secondaryContent={
-                  new Date(archive.timestamp).toLocaleDateString('de-DE') +
-                  ' ' +
-                  new Date(archive.timestamp).toLocaleTimeString('de-DE')
-                }
-              >
-                <Link
-                  href={`/admin/24-stunden-lauf/${archive.id}`}
-                  className="btn-outline btn-primary btn-square btn-sm btn mr-1"
-                  aria-label="Läufer einsehen"
-                >
-                  <Icon name="EyeIcon" />
-                </Link>
-                <button
-                  className="btn-outline btn-error btn-square btn-sm btn"
-                  onClick={async () =>
-                    themedPromiseToast(deleteArchive(archive.id), {
-                      pending: 'Lösche Archiv...',
-                      success: 'Archiv wurde erfolgreich gelöscht.',
-                      error: {
-                        render: (error) => {
-                          if (error instanceof Error) {
-                            return error.message;
-                          }
-                          return 'Unbekannter Fehler';
-                        },
-                      },
-                    })
+          {archives
+            .sort((a, b) => b.timestamp - a.timestamp)
+            .map((archive) => {
+              return (
+                <ListItem
+                  key={archive.id}
+                  mainContent={
+                    'Lauf ' + new Date(archive.timestamp).getFullYear()
+                  }
+                  secondaryContent={
+                    new Date(archive.timestamp).toLocaleDateString('de-DE') +
+                    ' ' +
+                    new Date(archive.timestamp).toLocaleTimeString('de-DE')
                   }
                 >
-                  <Icon name="TrashIcon" />
-                </button>
-              </ListItem>
-            );
-          })}
+                  <Link
+                    href={`/admin/24-stunden-lauf/${archive.id}`}
+                    className="btn-outline btn-primary btn-square btn-sm btn mr-1"
+                    aria-label="Läufer einsehen"
+                  >
+                    <Icon name="EyeIcon" />
+                  </Link>
+                  <button
+                    className="btn-outline btn-error btn-square btn-sm btn"
+                    onClick={async () =>
+                      themedPromiseToast(deleteArchive(archive.id), {
+                        pending: 'Lösche Archiv...',
+                        success: 'Archiv wurde erfolgreich gelöscht.',
+                        error: {
+                          render: (error) => {
+                            if (error instanceof Error) {
+                              return error.message;
+                            }
+                            return 'Unbekannter Fehler';
+                          },
+                        },
+                      })
+                    }
+                  >
+                    <Icon name="TrashIcon" />
+                  </button>
+                </ListItem>
+              );
+            })}
         </div>
       </main>
     </>

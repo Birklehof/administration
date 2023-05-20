@@ -4,10 +4,8 @@ import Head from '@/components/Head';
 import { useEffect, useState } from 'react';
 import useCollectionAsList from '@/lib/hooks/useCollectionAsList';
 import { Runner } from '@/lib/interfaces';
-import Icon from '@/components/Icon';
 import { useRouter } from 'next/router';
 import useRemoteConfig from '@/lib/hooks/useRemoteConfig';
-import Link from 'next/link';
 import ListItem from '@/components/ListItem';
 import SearchBar from '@/components/SearchBar';
 
