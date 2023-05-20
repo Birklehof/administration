@@ -37,18 +37,22 @@ export default async function handler(
 
   const staffSnapshot = await db.collection('staff').get();
 
-  staffSnapshot.forEach(async (doc) => {
-    const staff = doc.data() as Staff;
+  try {
+    staffSnapshot.forEach(async (doc) => {
+      const staff = doc.data() as Staff;
 
-    const newRunner = {
-      number: 0,
-      name: staff.firstName + ' ' + staff.lastName,
-      type: 'staff',
-      email: staff.email,
-    };
+      const newRunner = {
+        number: 0,
+        name: staff.firstName + ' ' + staff.lastName,
+        type: 'staff',
+        email: staff.email,
+      };
 
-    await db.collection('apps/24-stunden-lauf/runners').add(newRunner);
-  });
+      await db.collection('apps/24-stunden-lauf/runners').add(newRunner);
+    });
+  } catch (error: any) {
+    return res.status(500).json({ error: 'Error while creating runners' });
+  }
 
   return res
     .status(200)

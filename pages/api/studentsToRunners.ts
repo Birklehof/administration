@@ -37,20 +37,24 @@ export default async function handler(
 
   const studentsSnapshot = await db.collection('students').get();
 
-  studentsSnapshot.forEach(async (doc) => {
-    const student = doc.data() as Student;
+  try {
+    studentsSnapshot.forEach(async (doc) => {
+      const student = doc.data() as Student;
 
-    const newRunner = {
-      number: 0,
-      name: student.firstName + ' ' + student.lastName,
-      type: 'student',
-      email: student.email,
-      class: student.class,
-      house: student.house,
-    };
+      const newRunner = {
+        number: 0,
+        name: student.firstName + ' ' + student.lastName,
+        type: 'student',
+        email: student.email,
+        class: student.class,
+        house: student.house,
+      };
 
-    await db.collection('apps/24-stunden-lauf/runners').add(newRunner);
-  });
+      await db.collection('apps/24-stunden-lauf/runners').add(newRunner);
+    });
+  } catch (error: any) {
+    return res.status(500).json({ error: 'Error while creating runners' });
+  }
 
   return res
     .status(200)
