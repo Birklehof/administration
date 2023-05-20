@@ -31,46 +31,48 @@ export default function AdminIndex() {
     '/apps/24-stunden-lauf/archive'
   );
 
-  async function addStudentsToRunners(): Promise<number> {
-    const studentsSnapshot = await getDocs(collection(db, 'students'));
-    studentsSnapshot.forEach(async (doc) => {
-      const student = doc.data() as Student;
-
-      const newRunner = {
-        number: 0,
-        name: student.firstName + ' ' + student.lastName,
-        type: 'student',
-        email: student.email,
-        class: student.class,
-        house: student.house,
-      };
-
-      await addDoc(
-        collection(db, 'apps', '24-stunden-lauf', 'runners'),
-        newRunner
-      );
+  async function addStudentsToRunnersHandler(): Promise<number> {
+    // Make api request to /api/studentsToRunners
+    const res = await fetch('/api/studentsToRunners', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: user?.accessToken || '',
+      },
     });
-    return studentsSnapshot.size;
+
+    if (res.status == 200) {
+      const body = await res.json();
+      return body.runnersCreated;
+    }
+
+    if (res.status == 401 || res.status == 403) {
+      throw new Error('Zugriff verweigert');
+    }
+
+    throw new Error('Unbekannter Fehler');
   }
 
-  async function addStaffToRunners(): Promise<number> {
-    const staffSnapshot = await getDocs(collection(db, 'staff'));
-    staffSnapshot.forEach(async (doc) => {
-      const staff = doc.data() as Staff;
-
-      const newRunner = {
-        number: 0,
-        name: staff.firstName + ' ' + staff.lastName,
-        type: 'staff',
-        email: staff.email,
-      };
-
-      await addDoc(
-        collection(db, 'apps', '24-stunden-lauf', 'runners'),
-        newRunner
-      );
+  async function addStaffToRunnersHandler(): Promise<number> {
+    // Make api request to /api/staffToRunners
+    const res = await fetch('/api/staffToRunners', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: user?.accessToken || '',
+      },
     });
-    return staffSnapshot.size;
+
+    if (res.status == 200) {
+      const body = await res.json();
+      return body.runnersCreated;
+    }
+
+    if (res.status == 401 || res.status == 403) {
+      throw new Error('Zugriff verweigert');
+    }
+
+    throw new Error('Unbekannter Fehler');
   }
 
   async function archiveHandler() {
@@ -135,7 +137,7 @@ export default function AdminIndex() {
               </Link>
               <button
                 onClick={async () =>
-                  await themedPromiseToast(addStudentsToRunners, {
+                  await themedPromiseToast(addStudentsToRunnersHandler, {
                     pending: 'Füge Personal zu Läufern hinzu...',
                     success: {
                       render: (success) => {
@@ -152,7 +154,7 @@ export default function AdminIndex() {
               </button>
               <button
                 onClick={async () =>
-                  await themedPromiseToast(addStaffToRunners, {
+                  await themedPromiseToast(addStaffToRunnersHandler, {
                     pending: 'Füge Personal zu Läufern hinzu...',
                     success: {
                       render: (success) => {

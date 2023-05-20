@@ -38,7 +38,7 @@ export default function AdminRoles() {
     return <Loading />;
   }
 
-  async function setRoleHandler() {
+  async function setRole() {
     if (submitting) {
       return;
     }
@@ -151,7 +151,7 @@ export default function AdminRoles() {
                     }`}
                     aria-label="Berechtigung hinzufügen"
                     onClick={async () =>
-                      await themedPromiseToast(setRoleHandler(), {
+                      await themedPromiseToast(setRole(), {
                         pending: 'Berechtigung wird gespeichert ...',
                         success: 'Berechtigung gespeichert.',
                         error: 'Berechtigung konnte nicht gespeichert werden.',
