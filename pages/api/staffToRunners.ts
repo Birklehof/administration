@@ -59,7 +59,6 @@ export default async function handler(
             .add(newRunner)
             .then(() => {
               runnersAdded += 1;
-              console.log('Added runner ' + runnersAdded);
             });
         })
       ).finally(() => {

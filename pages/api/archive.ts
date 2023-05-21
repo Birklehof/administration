@@ -75,8 +75,6 @@ export default async function handler(
           lapsSnapshot.docs.map(async (lapDoc) => {
             const lap = lapDoc.data() as Lap;
 
-            console.log(lap);
-
             // Create the lap in the archive
             await db
               .collection('apps/24-stunden-lauf/archive/' + archiveId + '/laps')
@@ -123,8 +121,7 @@ export default async function handler(
 
       return res.status(200).json({ success: true });
     })
-    .catch(async (error) => {
-      console.error(error);
+    .catch(async () => {
       await db
         .collection('apps/24-stunden-lauf/archive')
         .doc(archiveId)
@@ -135,7 +132,8 @@ export default async function handler(
 }
 
 async function deleteCollection(path: string) {
-  await db.collection(path)
+  await db
+    .collection(path)
     .listDocuments()
     .then((val) => {
       var chunks = [];

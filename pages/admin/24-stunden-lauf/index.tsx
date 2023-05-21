@@ -189,7 +189,7 @@ export default function AdminIndex() {
                         } else if (typeof data === 'string') {
                           return data;
                         }
-                        return 'Fehler beim Hinzufügen der Läufer.';
+                        return 'Fehler beim Archivieren';
                       },
                     },
                   })
