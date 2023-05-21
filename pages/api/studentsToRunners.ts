@@ -14,6 +14,7 @@ export default async function handler(
     return res.status(401).json({ error: 'Access token required' });
   }
 
+  // Check if user is admin
   try {
     const token = await auth.verifyIdToken(
       req.headers.authorization.toString()
@@ -35,28 +36,41 @@ export default async function handler(
     return res.status(401).json({ error: error.message });
   }
 
-  const studentsSnapshot = await db.collection('students').get();
+  // Copy all students to runners
+  await db
+    .collection('students')
+    .get()
+    .then(async (studentsSnapshot) => {
+      let runnersAdded = 0;
 
-  try {
-    studentsSnapshot.forEach(async (doc) => {
-      const student = doc.data() as Student;
+      await Promise.all(
+        studentsSnapshot.docs.map(async (doc) => {
+          const student = doc.data() as Student;
 
-      const newRunner = {
-        number: 0,
-        name: student.firstName + ' ' + student.lastName,
-        type: 'student',
-        email: student.email,
-        class: student.class,
-        house: student.house,
-      };
+          const newRunner = {
+            number: 0,
+            name: student.firstName + ' ' + student.lastName,
+            type: 'student',
+            email: student.email,
+            class: student.class,
+            house: student.house,
+          };
 
-      await db.collection('apps/24-stunden-lauf/runners').add(newRunner);
+          await db
+            .collection('apps/24-stunden-lauf/runners')
+            .add(newRunner)
+            .then(() => {
+              runnersAdded += 1;
+              console.log('Added runner ' + runnersAdded);
+            });
+        })
+      ).finally(() => {
+        return res
+          .status(200)
+          .json({ success: true, runnersCreated: runnersAdded });
+      });
+    })
+    .catch((error: any) => {
+      return res.status(500).json({ error: 'Error while creating runners' });
     });
-  } catch (error: any) {
-    return res.status(500).json({ error: 'Error while creating runners' });
-  }
-
-  return res
-    .status(200)
-    .json({ success: true, runnersCreated: studentsSnapshot.size });
 }

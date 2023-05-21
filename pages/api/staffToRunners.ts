@@ -14,6 +14,7 @@ export default async function handler(
     return res.status(401).json({ error: 'Access token required' });
   }
 
+  // Check if user is admin
   try {
     const token = await auth.verifyIdToken(
       req.headers.authorization.toString()
@@ -35,26 +36,39 @@ export default async function handler(
     return res.status(401).json({ error: error.message });
   }
 
-  const staffSnapshot = await db.collection('staff').get();
+  // Copy all staff to runners
+  await db
+    .collection('staff')
+    .get()
+    .then(async (staffSnapshot) => {
+      let runnersAdded = 0;
 
-  try {
-    staffSnapshot.forEach(async (doc) => {
-      const staff = doc.data() as Staff;
+      await Promise.all(
+        staffSnapshot.docs.map(async (doc) => {
+          const staff = doc.data() as Staff;
 
-      const newRunner = {
-        number: 0,
-        name: staff.firstName + ' ' + staff.lastName,
-        type: 'staff',
-        email: staff.email,
-      };
+          const newRunner = {
+            number: 0,
+            name: staff.firstName + ' ' + staff.lastName,
+            type: 'staff',
+            email: staff.email,
+          };
 
-      await db.collection('apps/24-stunden-lauf/runners').add(newRunner);
+          await db
+            .collection('apps/24-stunden-lauf/runners')
+            .add(newRunner)
+            .then(() => {
+              runnersAdded += 1;
+              console.log('Added runner ' + runnersAdded);
+            });
+        })
+      ).finally(() => {
+        return res
+          .status(200)
+          .json({ success: true, runnersCreated: runnersAdded });
+      });
+    })
+    .catch((error: any) => {
+      return res.status(500).json({ error: 'Error while creating runners' });
     });
-  } catch (error: any) {
-    return res.status(500).json({ error: 'Error while creating runners' });
-  }
-
-  return res
-    .status(200)
-    .json({ success: true, runnersCreated: staffSnapshot.size });
 }

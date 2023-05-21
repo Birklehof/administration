@@ -2,16 +2,6 @@ import Loading from '@/components/Loading';
 import useAuth from '@/lib/hooks/useAuth';
 import Head from '@/components/Head';
 import { useEffect } from 'react';
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  getDocs,
-  doc,
-  setDoc,
-} from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import { Runner, Staff, Student, Lap } from '@/lib/interfaces';
 import { themedPromiseToast } from '@/lib/utils';
 import useCollectionCount from '@/lib/hooks/useCollectionCount';
 import useCollectionAsList from '@/lib/hooks/useCollectionAsList';
@@ -47,10 +37,10 @@ export default function AdminIndex() {
     }
 
     if (res.status == 401 || res.status == 403) {
-      throw new Error('Zugriff verweigert');
+      return Promise.reject('Zugriff verweigert');
     }
 
-    throw new Error('Unbekannter Fehler');
+    return Promise.reject('Fehler beim Hinzufügen der Läufer.');
   }
 
   async function addStaffToRunnersHandler(): Promise<number> {
@@ -69,10 +59,10 @@ export default function AdminIndex() {
     }
 
     if (res.status == 401 || res.status == 403) {
-      throw new Error('Zugriff verweigert');
+      return Promise.reject('Zugriff verweigert');
     }
 
-    throw new Error('Unbekannter Fehler');
+    return Promise.reject('Fehler beim Hinzufügen der Läufer.');
   }
 
   async function archiveHandler() {
@@ -90,10 +80,10 @@ export default function AdminIndex() {
     }
 
     if (res.status == 401 || res.status == 403) {
-      throw new Error('Zugriff verweigert');
+      return Promise.reject('Zugriff verweigert');
     }
 
-    throw new Error('Unbekannter Fehler');
+    return Promise.reject('Fehler beim Archivieren.');
   }
 
   useEffect(() => {
@@ -141,10 +131,19 @@ export default function AdminIndex() {
                     pending: 'Füge Personal zu Läufern hinzu...',
                     success: {
                       render: (success) => {
-                        return `${success.data} Läufer wurden erfolgreich hinzugefügt.`;
+                        return `${success.data} Läufer wurden hinzugefügt.`;
                       },
                     },
-                    error: 'Fehler beim Hinzufügen der Läufer.',
+                    error: {
+                      render: ({ data }: any) => {
+                        if (data.message) {
+                          return data.message;
+                        } else if (typeof data === 'string') {
+                          return data;
+                        }
+                        return 'Fehler beim Hinzufügen der Läufer.';
+                      },
+                    },
                   })
                 }
                 className="btn-outline btn-primary btn-sm btn"
@@ -158,10 +157,19 @@ export default function AdminIndex() {
                     pending: 'Füge Personal zu Läufern hinzu...',
                     success: {
                       render: (success) => {
-                        return `${success.data} Läufer wurden erfolgreich hinzugefügt.`;
+                        return `${success.data} Läufer wurden hinzugefügt.`;
                       },
                     },
-                    error: 'Fehler beim Hinzufügen der Läufer.',
+                    error: {
+                      render: ({ data }: any) => {
+                        if (data.message) {
+                          return data.message;
+                        } else if (typeof data === 'string') {
+                          return data;
+                        }
+                        return 'Fehler beim Hinzufügen der Läufer.';
+                      },
+                    },
                   })
                 }
                 className="btn-outline btn-primary btn-sm btn"
@@ -178,8 +186,10 @@ export default function AdminIndex() {
                       render: ({ data }: any) => {
                         if (data.message) {
                           return data.message;
+                        } else if (typeof data === 'string') {
+                          return data;
                         }
-                        return 'Unbekannter Fehler';
+                        return 'Fehler beim Hinzufügen der Läufer.';
                       },
                     },
                   })
