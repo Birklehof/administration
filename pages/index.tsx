@@ -8,7 +8,6 @@ export default function Index() {
   const { isLoggedIn, user, role, logout } = useAuth();
 
   useEffect(() => {
-    console.log('test');
     if (isLoggedIn && user && role) {
       redirect(role).then((path) => {
         router.push(path);

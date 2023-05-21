@@ -128,7 +128,7 @@ export default function AdminIndex() {
               <button
                 onClick={async () =>
                   await themedPromiseToast(addStudentsToRunnersHandler, {
-                    pending: 'Füge Personal zu Läufern hinzu...',
+                    pending: 'Füge Schüler zu Läufern hinzu...',
                     success: {
                       render: (success) => {
                         return `${success.data} Läufer wurden hinzugefügt.`;
