@@ -6,13 +6,13 @@ export interface Role {
 }
 
 export interface Lap {
-  id: string;
+  id?: string;
   runnerId: string;
   timestamp: Timestamp;
 }
 
 export interface Runner {
-  id: string;
+  id?: string;
   number: number;
   name: string;
   type: string;
@@ -25,14 +25,14 @@ export interface Runner {
 }
 
 export interface Staff {
-  id: string;
+  id?: string;
   firstName: string;
   lastName: string;
   email: string;
 }
 
 export interface Student {
-  id: string;
+  id?: string;
   number: number;
   firstName: string;
   lastName: string;

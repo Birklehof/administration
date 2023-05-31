@@ -3,7 +3,7 @@ import useAuth from '@/lib/hooks/useAuth';
 import Head from '@/components/Head';
 import { useEffect, useState } from 'react';
 import useCollectionAsList from '@/lib/hooks/useCollectionAsList';
-import { Runner } from '@/lib/interfaces';
+import { Lap, Runner } from '@/lib/interfaces';
 import Icon from '@/components/Icon';
 import { useRouter } from 'next/router';
 import useRemoteConfig from '@/lib/hooks/useRemoteConfig';
@@ -16,6 +16,9 @@ export default function Admin24StundenLauf() {
   const router = useRouter();
   const [runners, runnersLoading, runnersError] = useCollectionAsList<Runner>(
     '/apps/24-stunden-lauf/runners'
+  );
+  const [laps, lapsLoading, lapsError] = useCollectionAsList<Lap>(
+    '/apps/24-stunden-lauf/laps'
   );
   const { isLoggedIn, user } = useAuth();
   const { classes, houses } = useRemoteConfig();
@@ -57,6 +60,10 @@ export default function Admin24StundenLauf() {
     return !filterName || runner.name?.includes(filterName);
   }
 
+  function getLapCount(runnerId: string): number {
+    return laps.filter((lap) => lap.runnerId === runnerId).length;
+  }
+
   useEffect(() => {
     if (!isLoggedIn) {
       return;
@@ -64,7 +71,7 @@ export default function Admin24StundenLauf() {
     console.log(runners);
   }, [isLoggedIn]);
 
-  if (!user || runnersLoading) {
+  if (!user || runnersLoading || lapsLoading) {
     return <Loading />;
   }
 
@@ -110,6 +117,9 @@ export default function Admin24StundenLauf() {
             .filter((runner) => {
               return filter(runner);
             })
+            .sort((a, b) => {
+              return getLapCount(b.id || "") - getLapCount(a.id || "");
+            })
             .map((runner) => {
               return (
                 <ListItem
@@ -129,10 +139,18 @@ export default function Admin24StundenLauf() {
                       : ['Gast']
                   }
                 >
+                  <div className="my-auto px-2">
+                    <div className="stat-value text-center text-lg font-semibold md:text-xl">
+                      {getLapCount(runner.id || "")}
+                    </div>
+                    <div className="stat-title -mt-2 text-center text-xs">
+                      Runden
+                    </div>
+                  </div>
                   <button
                     className="btn-outline btn-error btn-square btn-sm btn"
                     onClick={async () =>
-                      await themedPromiseToast(deleteRunner(runner.id), {
+                      await themedPromiseToast(deleteRunner(runner.id || ""), {
                         pending: 'Lösche Läufer...',
                         success: 'Läufer gelöscht.',
                         error: 'Läufer konnte nicht gelöscht werden.',

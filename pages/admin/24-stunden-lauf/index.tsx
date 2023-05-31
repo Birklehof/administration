@@ -119,86 +119,88 @@ export default function AdminIndex() {
             <div className="card-body">
               <h1 className="card-title">Aktuelle Veranstaltung</h1>
               <Link
-                href="/admin/24-stunden-lauf/runners"
-                className="btn-outline btn-primary btn-square btn-sm btn mr-1"
-                aria-label="Läufer einsehen"
-              >
-                <Icon name="EyeIcon" />
-              </Link>
-              <button
-                onClick={async () =>
-                  await themedPromiseToast(addStudentsToRunnersHandler, {
-                    pending: 'Füge Schüler zu Läufern hinzu...',
-                    success: {
-                      render: (success) => {
-                        return `${success.data} Läufer wurden hinzugefügt.`;
+                  href="/admin/24-stunden-lauf/runners"
+                  className="btn-outline btn-primary btn-xl btn"
+                  aria-label="Läufer einsehen"
+                >
+                  Läufer einsehen
+                </Link>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  onClick={async () =>
+                    await themedPromiseToast(addStudentsToRunnersHandler, {
+                      pending: 'Füge Schüler zu Läufern hinzu...',
+                      success: {
+                        render: (success) => {
+                          return `${success.data} Läufer wurden hinzugefügt.`;
+                        },
                       },
-                    },
-                    error: {
-                      render: ({ data }: any) => {
-                        if (data.message) {
-                          return data.message;
-                        } else if (typeof data === 'string') {
-                          return data;
-                        }
-                        return 'Fehler beim Hinzufügen der Läufer.';
+                      error: {
+                        render: ({ data }: any) => {
+                          if (data.message) {
+                            return data.message;
+                          } else if (typeof data === 'string') {
+                            return data;
+                          }
+                          return 'Fehler beim Hinzufügen der Läufer.';
+                        },
                       },
-                    },
-                  })
-                }
-                className="btn-outline btn-primary btn-sm btn"
-                aria-label="Schüler als Läufer hinzufügen"
-              >
-                Schüler als Läufer hinzufügen
-              </button>
-              <button
-                onClick={async () =>
-                  await themedPromiseToast(addStaffToRunnersHandler, {
-                    pending: 'Füge Personal zu Läufern hinzu...',
-                    success: {
-                      render: (success) => {
-                        return `${success.data} Läufer wurden hinzugefügt.`;
+                    })
+                  }
+                  className="btn-outline btn-warning btn aspect-square w-full"
+                  aria-label="Schüler als Läufer hinzufügen"
+                >
+                  Schüler als Läufer hinzufügen
+                </button>
+                <button
+                  onClick={async () =>
+                    await themedPromiseToast(addStaffToRunnersHandler, {
+                      pending: 'Füge Personal zu Läufern hinzu...',
+                      success: {
+                        render: (success) => {
+                          return `${success.data} Läufer wurden hinzugefügt.`;
+                        },
                       },
-                    },
-                    error: {
-                      render: ({ data }: any) => {
-                        if (data.message) {
-                          return data.message;
-                        } else if (typeof data === 'string') {
-                          return data;
-                        }
-                        return 'Fehler beim Hinzufügen der Läufer.';
+                      error: {
+                        render: ({ data }: any) => {
+                          if (data.message) {
+                            return data.message;
+                          } else if (typeof data === 'string') {
+                            return data;
+                          }
+                          return 'Fehler beim Hinzufügen der Läufer.';
+                        },
                       },
-                    },
-                  })
-                }
-                className="btn-outline btn-primary btn-sm btn"
-                aria-label="Add staff to runners"
-              >
-                Personal als Läufer hinzufügen
-              </button>
-              <button
-                onClick={async () =>
-                  await themedPromiseToast(archiveHandler, {
-                    pending: 'Archiviere Läufer...',
-                    success: 'Läufer wurden erfolgreich archiviert.',
-                    error: {
-                      render: ({ data }: any) => {
-                        if (data.message) {
-                          return data.message;
-                        } else if (typeof data === 'string') {
-                          return data;
-                        }
-                        return 'Fehler beim Archivieren';
+                    })
+                  }
+                  className="btn-outline btn-warning btn aspect-square w-full"
+                  aria-label="Add staff to runners"
+                >
+                  Personal als Läufer hinzufügen
+                </button>
+                <button
+                  onClick={async () =>
+                    await themedPromiseToast(archiveHandler, {
+                      pending: 'Archiviere Läufer...',
+                      success: 'Läufer wurden erfolgreich archiviert.',
+                      error: {
+                        render: ({ data }: any) => {
+                          if (data.message) {
+                            return data.message;
+                          } else if (typeof data === 'string') {
+                            return data;
+                          }
+                          return 'Fehler beim Archivieren';
+                        },
                       },
-                    },
-                  })
-                }
-                className="btn-outline btn-primary btn-sm btn"
-                aria-label="Archivieren"
-              >
-                Archivieren
-              </button>
+                    })
+                  }
+                  className="btn-outline btn-error btn aspect-square w-full"
+                  aria-label="Archivieren"
+                >
+                  Archivieren
+                </button>
+              </div>
             </div>
           </div>
 
