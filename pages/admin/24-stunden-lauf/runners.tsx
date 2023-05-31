@@ -8,7 +8,7 @@ import Icon from '@/components/Icon';
 import { useRouter } from 'next/router';
 import useRemoteConfig from '@/lib/hooks/useRemoteConfig';
 import ListItem from '@/components/ListItem';
-import { deleteRunner } from '@/lib/firebaseUtils';
+import { deleteRunner } from '@/lib/firebase/frontendUtils';
 import { themedPromiseToast } from '@/lib/utils';
 import SearchBar from '@/components/SearchBar';
 
@@ -68,7 +68,6 @@ export default function Admin24StundenLauf() {
     if (!isLoggedIn) {
       return;
     }
-    console.log(runners);
   }, [isLoggedIn]);
 
   if (!user || runnersLoading || lapsLoading) {
@@ -126,7 +125,6 @@ export default function Admin24StundenLauf() {
                   key={runner.id}
                   number={runner.number}
                   mainContent={runner.name}
-                  secondaryContent={runner.email}
                   badges={
                     runner.type === 'student'
                       ? [

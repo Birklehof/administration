@@ -7,7 +7,7 @@ import useCollectionCount from '@/lib/hooks/useCollectionCount';
 import useCollectionAsList from '@/lib/hooks/useCollectionAsList';
 import Link from 'next/link';
 import Icon from '@/components/Icon';
-import { deleteArchive } from '@/lib/firebaseUtils';
+import { deleteArchive } from '@/lib/firebase/frontendUtils';
 import ListItem from '@/components/ListItem';
 
 export default function AdminIndex() {

@@ -31,11 +31,11 @@
 }
 
 .main > * {
-  @apply max-w-xl;
+  @apply max-w-xl w-full;
 }
 
 .search-bar {
-  @apply menu rounded-box menu-horizontal absolute z-40 mt-2 w-[calc(100%-1rem)] bg-base-100 p-2 shadow-xl;
+  @apply menu rounded-box menu-horizontal absolute z-40 mt-2 w-[calc(100%-1rem)] max-w-xl bg-base-100 p-2 shadow-xl;
 }
 
 .search-bar + * {

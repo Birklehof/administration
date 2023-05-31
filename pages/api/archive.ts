@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { auth, db } from '@/lib/firebase/firebaseAdmin';
 import { Lap, Runner } from '@/lib/interfaces';
+import { deleteCollection } from '@/lib/firebase/backendUtils';
 
 export default async function handler(
   req: NextApiRequest,
@@ -128,26 +129,5 @@ export default async function handler(
         .delete();
 
       return res.status(500).json({ error: 'Error while archiving' });
-    });
-}
-
-async function deleteCollection(path: string) {
-  await db
-    .collection(path)
-    .listDocuments()
-    .then((val) => {
-      var chunks = [];
-      for (let i = 0; i < val.length; i += 500) {
-        chunks.push(val.slice(i, i + 500));
-      }
-
-      for (var chunk of chunks) {
-        // Get a new write batch
-        var batch = db.batch();
-        chunk.map((document) => {
-          batch.delete(document);
-        });
-        batch.commit();
-      }
     });
 }

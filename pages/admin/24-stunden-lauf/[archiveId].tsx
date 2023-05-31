@@ -65,7 +65,6 @@ export default function Admin24StundenLauf() {
     if (!isLoggedIn) {
       return;
     }
-    console.log(runners);
   }, [isLoggedIn]);
 
   if (!user || runnersLoading || lapsLoading) {
@@ -123,7 +122,6 @@ export default function Admin24StundenLauf() {
                   key={runner.id}
                   number={runner.number}
                   mainContent={runner.name}
-                  secondaryContent={runner.email}
                   badges={
                     runner.type === 'student'
                       ? [

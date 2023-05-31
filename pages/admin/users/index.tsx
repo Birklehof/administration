@@ -8,7 +8,7 @@ import useRemoteConfig from '@/lib/hooks/useRemoteConfig';
 import useCollectionAsList from '@/lib/hooks/useCollectionAsList';
 import ListItem from '@/components/ListItem';
 import { themedPromiseToast } from '@/lib/utils';
-import { deleteUser } from '@/lib/firebaseUtils';
+import { deleteUser } from '@/lib/firebase/frontendUtils';
 import SearchBar from '@/components/SearchBar';
 
 interface StudentOrStaff {
@@ -103,7 +103,10 @@ export default function AdminUsers() {
               setFilterValue: setFilterClasses,
               filterOptions: [
                 { value: '', label: 'Alle Klassen' },
-                ...classes.map((_class) => ({ value: _class, label: _class })),
+                ...classes.map((_class) => ({
+                  value: _class,
+                  label: _class,
+                })),
               ],
             },
             {
@@ -132,7 +135,7 @@ export default function AdminUsers() {
                   }
                 >
                   <button
-                    className="btn-outline btn-error btn-sm btn-square btn"
+                    className="btn-outline btn-error btn-square btn-sm btn"
                     onClick={async () =>
                       await themedPromiseToast(
                         deleteUser(user.id, user.email),

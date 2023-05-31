@@ -5,7 +5,7 @@ import useAuth from '@/lib/hooks/useAuth';
 import { themedPromiseToast } from '@/lib/utils';
 import { Staff, Student } from '@/lib/interfaces';
 import useRemoteConfig from '@/lib/hooks/useRemoteConfig';
-import { createStaff, createStudent } from '@/lib/firebaseUtils';
+import { createStaff, createStudent } from '@/lib/firebase/frontendUtils';
 
 export default function AssistantCreateRunner() {
   const { isLoggedIn, user } = useAuth();

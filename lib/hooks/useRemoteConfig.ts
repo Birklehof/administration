@@ -40,9 +40,6 @@ export default function useRemoteConfig() {
             setHouses(JSON.parse(houseData).sort());
           }
         })
-        .catch((err) => {
-          console.log(err);
-        });
     }
   }, []);
 

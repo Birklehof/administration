@@ -1,6 +1,6 @@
 import { deleteDoc, doc, collection, addDoc } from 'firebase/firestore';
-import { db } from './firebase';
-import { Staff, Student } from './interfaces';
+import { db } from '.';
+import { Staff, Student } from '../interfaces';
 
 export async function deleteArchive(archiveId: string) {
   await deleteDoc(doc(db, 'apps', '24-stunden-lauf', 'archive', archiveId));
