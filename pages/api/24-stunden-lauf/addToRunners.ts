@@ -36,19 +36,47 @@ export default async function handler(
     return res.status(401).json({ error: error.message });
   }
 
-  // Copy all students to runners
-  await db
+  const newNumbersStart = await db
+    .collection('apps/24-stunden-lauf/runners')
+    .orderBy('number', 'desc')
+    .limit(1)
+    .get()
+    .then((snapshot) => {
+      if (snapshot.empty) {
+        return 1;
+      } else {
+        return snapshot.docs[0].data().number + 1;
+      }
+    });
+
+  const studentsAdded = await addStudents(newNumbersStart, res);
+  const staffAdded = await addStaff(res, newNumbersStart + studentsAdded);
+
+  console.log('Added runners:');
+  console.log(studentsAdded, staffAdded);
+
+  return res.status(200).json({
+    studentsAdded,
+    staffAdded,
+  });
+}
+
+async function addStudents(
+  newNumbersStart: number,
+  res: NextApiResponse
+): Promise<number | void> {
+  return db
     .collection('students')
     .get()
     .then(async (studentsSnapshot) => {
       let runnersAdded = 0;
 
       await Promise.all(
-        studentsSnapshot.docs.map(async (doc) => {
+        studentsSnapshot.docs.map(async (doc, index) => {
           const student = doc.data() as Student;
 
           const newRunner = {
-            number: 0,
+            number: newNumbersStart + index,
             studentId: student.studentId,
             name: student.firstName + ' ' + student.lastName,
             type: 'student',
@@ -73,13 +101,54 @@ export default async function handler(
               });
           }
         })
-      ).finally(() => {
-        return res
-          .status(200)
-          .json({ success: true, runnersCreated: runnersAdded });
-      });
+      );
+      return runnersAdded;
     })
     .catch((error: any) => {
+      return res.status(500).json({ error: 'Error while creating runners' });
+    });
+}
+
+async function addStaff(
+  res: NextApiResponse,
+  newNumbersStart: number
+): Promise<number | void> {
+  return db
+    .collection('staff')
+    .get()
+    .then(async (staffSnapshot) => {
+      let runnersAdded = 0;
+
+      await Promise.all(
+        staffSnapshot.docs.map(async (doc, index) => {
+          const staff = doc.data() as Staff;
+
+          const newRunner = {
+            number: newNumbersStart + index,
+            name: staff.firstName + ' ' + staff.lastName,
+            type: 'staff',
+            email: staff.email,
+          };
+
+          // Check if staff is already a runner by checking if there is a runner with the same email
+          const runner = await db
+            .collection('apps/24-stunden-lauf/runners')
+            .where('email', '==', staff.email)
+            .get();
+
+          if (runner.empty) {
+            await db
+              .collection('apps/24-stunden-lauf/runners')
+              .add(newRunner)
+              .then(() => {
+                runnersAdded += 1;
+              });
+          }
+        })
+      );
+      return runnersAdded;
+    })
+    .catch(() => {
       return res.status(500).json({ error: 'Error while creating runners' });
     });
 }

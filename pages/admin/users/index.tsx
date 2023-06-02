@@ -124,6 +124,12 @@ export default function AdminUsers() {
             .filter((user) => {
               return filter(user);
             })
+            .sort((a, b) => {
+              return (
+                a.firstName.localeCompare(b.firstName) ||
+                a.lastName.localeCompare(b.lastName)
+              );
+            })
             .map((user) => {
               return (
                 <ListItem

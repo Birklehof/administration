@@ -21,9 +21,9 @@ export default function AdminIndex() {
     '/apps/24-stunden-lauf/archive'
   );
 
-  async function addStudentsToRunnersHandler(): Promise<number> {
+  async function addRunnersHandler(): Promise<[number, number]> {
     // Make api request to /api/studentsToRunners
-    const res = await fetch('/api/students/addToRunners', {
+    const res = await fetch('/api/24-stunden-lauf/addToRunners', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -33,29 +33,7 @@ export default function AdminIndex() {
 
     if (res.status == 200) {
       const body = await res.json();
-      return body.runnersCreated;
-    }
-
-    if (res.status == 401 || res.status == 403) {
-      return Promise.reject('Zugriff verweigert');
-    }
-
-    return Promise.reject('Fehler beim Hinzufügen der Läufer.');
-  }
-
-  async function addStaffToRunnersHandler(): Promise<number> {
-    // Make api request to /api/staffToRunners
-    const res = await fetch('/api/staff/addToRunners', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: user?.accessToken || '',
-      },
-    });
-
-    if (res.status == 200) {
-      const body = await res.json();
-      return body.runnersCreated;
+      return [body.studentsAdded, body.staffAdded];
     }
 
     if (res.status == 401 || res.status == 403) {
@@ -67,7 +45,7 @@ export default function AdminIndex() {
 
   async function archiveHandler() {
     // Make api request to /api/createLap
-    const res = await fetch('/api/archive', {
+    const res = await fetch('/api/24-stunden-lauf/archive', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -119,20 +97,20 @@ export default function AdminIndex() {
             <div className="card-body">
               <h1 className="card-title">Aktuelle Veranstaltung</h1>
               <Link
-                  href="/admin/24-stunden-lauf/runners"
-                  className="btn-outline btn-primary btn-xl btn"
-                  aria-label="Läufer einsehen"
-                >
-                  Läufer einsehen
-                </Link>
+                href="/admin/24-stunden-lauf/runners"
+                className="btn-outline btn-xl btn-primary btn"
+                aria-label="Läufer einsehen"
+              >
+                Läufer einsehen
+              </Link>
               <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={async () =>
-                    await themedPromiseToast(addStudentsToRunnersHandler, {
-                      pending: 'Füge Schüler zu Läufern hinzu...',
+                    await themedPromiseToast(addRunnersHandler, {
+                      pending: 'Füge Läufer hinzu...',
                       success: {
                         render: (success) => {
-                          return `${success.data} Läufer wurden hinzugefügt.`;
+                          return `${success.data[0]} Schüler und ${success.data[1]} Mitarbeiter wurden hinzugefügt.`;
                         },
                       },
                       error: {
@@ -150,33 +128,7 @@ export default function AdminIndex() {
                   className="btn-outline btn-warning btn aspect-square w-full"
                   aria-label="Schüler als Läufer hinzufügen"
                 >
-                  Schüler als Läufer hinzufügen
-                </button>
-                <button
-                  onClick={async () =>
-                    await themedPromiseToast(addStaffToRunnersHandler, {
-                      pending: 'Füge Personal zu Läufern hinzu...',
-                      success: {
-                        render: (success) => {
-                          return `${success.data} Läufer wurden hinzugefügt.`;
-                        },
-                      },
-                      error: {
-                        render: ({ data }: any) => {
-                          if (data.message) {
-                            return data.message;
-                          } else if (typeof data === 'string') {
-                            return data;
-                          }
-                          return 'Fehler beim Hinzufügen der Läufer.';
-                        },
-                      },
-                    })
-                  }
-                  className="btn-outline btn-warning btn aspect-square w-full"
-                  aria-label="Add staff to runners"
-                >
-                  Personal als Läufer hinzufügen
+                  Läufer hinzufügen
                 </button>
                 <button
                   onClick={async () =>

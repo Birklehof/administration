@@ -117,7 +117,9 @@ export default function Admin24StundenLauf() {
               return filter(runner);
             })
             .sort((a, b) => {
-              return getLapCount(b.id || "") - getLapCount(a.id || "") || a.name?.localeCompare(b.name || "") || 0;
+              // Sort by number
+              return (a.number || 0) - (b.number || 0) || 0;
+              // return getLapCount(b.id || "") - getLapCount(a.id || "") || a.name?.localeCompare(b.name || "") || 0;
             })
             .map((runner) => {
               return (
