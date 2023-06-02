@@ -97,26 +97,26 @@ async function parseStudents(file: formidable.File, houses: { name: string, abbr
 function parseStudent(line: string, houses: { name: string, abbreviation: string }[]): Student {
   const student = line.split(';');
 
-  const numberStr = student[0].trim();
+  const studentId = student[0].trim();
   const lastName = student[1].trim();
   const firstName = student[2].trim();
   const _class = student[3].replace(/\s/g, '').toUpperCase();
   const house = houses.find(house => house.abbreviation === student[4].trim())?.name || student[4].trim();
   const email = student[5]?.trim() || `${firstName.replace(/\s/g, '').toLowerCase()}.${lastName.replace(/\s/g, '').toLowerCase()}@s.birklehof.de`;
 
-  // Parse number
-  if (numberStr.length !== 5) {
+  // Parse studentId
+  if (studentId.length !== 5) {
     throw new Error('Invalid student number');
   }
 
-  const numberInt = parseInt(numberStr);
+  const studentIdInt = parseInt(studentId);
 
-  if (isNaN(numberInt)) {
+  if (isNaN(studentIdInt)) {
     throw new Error('Invalid student number');
   }
 
   return {
-    number: numberInt,
+    studentId: studentIdInt,
     firstName,
     lastName,
     class: _class,

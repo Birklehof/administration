@@ -54,7 +54,7 @@ export default async function handler(
             email: staff.email,
           };
 
-          // Check if staff is already a runner by checking if the email is already in the runners collection
+          // Check if staff is already a runner by checking if there is a runner with the same email
           const runner = await db
             .collection('apps/24-stunden-lauf/runners')
             .where('email', '==', staff.email)

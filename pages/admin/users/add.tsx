@@ -36,7 +36,7 @@ export default function AssistantCreateRunner() {
     const formData = new FormData(e.target as HTMLFormElement);
 
     const newStudent: Student = {
-      number: formData.get('number') as unknown as number,
+      studentId: formData.get('studentId') as unknown as number,
       firstName: formData.get('firstName') as string,
       lastName: formData.get('lastName') as string,
       email: formData.get('email') as string,
@@ -136,8 +136,8 @@ export default function AssistantCreateRunner() {
                   className="flex flex-col gap-3"
                 >
                   <input
-                    id="number"
-                    name="number"
+                    id="studentId"
+                    name="studentId"
                     className="input-bordered input"
                     placeholder="Schülernummer (5-stellig)"
                     autoFocus

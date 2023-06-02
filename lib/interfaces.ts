@@ -33,7 +33,7 @@ export interface Staff {
 
 export interface Student {
   id?: string;
-  number: number;
+  studentId: number;
   firstName: string;
   lastName: string;
   email: string;
