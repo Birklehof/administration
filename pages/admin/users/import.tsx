@@ -89,8 +89,8 @@ export default function AssistantCreateRunner() {
 
     // Upload to server
     await themedPromiseToast(uploadToServer(body, '/api/staff/import'), {
-      pending: 'Importiere Personal...',
-      success: 'Personal erfolgreich importiert',
+      pending: 'Importiere Mitarbeiter...',
+      success: 'Mitarbeiter erfolgreich importiert',
       error: {
         render: ({ data }: any) => {
           if (data.message) {
@@ -98,7 +98,7 @@ export default function AssistantCreateRunner() {
           } else if (typeof data === 'string') {
             return data;
           }
-          return 'Fehler beim Importieren des Personals.';
+          return 'Fehler beim Importieren der Mitarbeiter.';
         },
       },
     })
@@ -171,7 +171,7 @@ export default function AssistantCreateRunner() {
                 onSubmit={importStaffHandler}
               >
                 <h2 className="text-center text-lg font-bold">
-                  Personal importieren
+                  Mitarbeiter importieren
                 </h2>
                 <input
                   type="file"

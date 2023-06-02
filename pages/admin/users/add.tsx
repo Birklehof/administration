@@ -83,8 +83,8 @@ export default function AssistantCreateRunner() {
     };
 
     themedPromiseToast(createStaff(newStaff), {
-      pending: 'Personal wird hinzugefügt...',
-      success: 'Personal wurde hinzugefügt!',
+      pending: 'Mitarbeiter werden hinzugefügt...',
+      success: 'Mitarbeiter wurden hinzugefügt!',
       error: {
         render: (error) => {
           if (error instanceof Error) {
