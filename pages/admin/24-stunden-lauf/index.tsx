@@ -23,7 +23,7 @@ export default function AdminIndex() {
 
   async function addStudentsToRunnersHandler(): Promise<number> {
     // Make api request to /api/studentsToRunners
-    const res = await fetch('/api/studentsToRunners', {
+    const res = await fetch('/api/students/addToRunners', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ export default function AdminIndex() {
 
   async function addStaffToRunnersHandler(): Promise<number> {
     // Make api request to /api/staffToRunners
-    const res = await fetch('/api/staffToRunners', {
+    const res = await fetch('/api/staff/addToRunners', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

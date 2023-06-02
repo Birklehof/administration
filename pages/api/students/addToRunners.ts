@@ -49,6 +49,7 @@ export default async function handler(
 
           const newRunner = {
             number: 0,
+            student_number: student.number,
             name: student.firstName + ' ' + student.lastName,
             type: 'student',
             email: student.email,
@@ -56,12 +57,21 @@ export default async function handler(
             house: student.house,
           };
 
-          await db
+          // Check if student is already a runner by checking if the student number is already in the runners collection
+          const runner = await db
             .collection('apps/24-stunden-lauf/runners')
-            .add(newRunner)
-            .then(() => {
-              runnersAdded += 1;
-            });
+            .where('student_number', '==', student.number)
+            .get();
+
+          // If the student is not already a runner, add them to the runners collection
+          if (runner.empty) {
+            await db
+              .collection('apps/24-stunden-lauf/runners')
+              .add(newRunner)
+              .then(() => {
+                runnersAdded += 1;
+              });
+          }
         })
       ).finally(() => {
         return res

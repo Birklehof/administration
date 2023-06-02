@@ -176,7 +176,7 @@ export default function AdminRoles() {
           )}
           {activeTab === '' && (
             <div className="text-center text-sm">
-              Wähle eine App aus, um ihre Berechtigungen zu verwalten.
+              Wählen Sie eine App aus, um ihre Berechtigungen zu verwalten.
             </div>
           )}
         </div>

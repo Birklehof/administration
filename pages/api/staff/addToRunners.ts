@@ -54,12 +54,20 @@ export default async function handler(
             email: staff.email,
           };
 
-          await db
+          // Check if staff is already a runner by checking if the email is already in the runners collection
+          const runner = await db
             .collection('apps/24-stunden-lauf/runners')
-            .add(newRunner)
-            .then(() => {
-              runnersAdded += 1;
-            });
+            .where('email', '==', staff.email)
+            .get();
+
+          if (runner.empty) {
+            await db
+              .collection('apps/24-stunden-lauf/runners')
+              .add(newRunner)
+              .then(() => {
+                runnersAdded += 1;
+              });
+          }
         })
       ).finally(() => {
         return res
@@ -67,7 +75,7 @@ export default async function handler(
           .json({ success: true, runnersCreated: runnersAdded });
       });
     })
-    .catch((error: any) => {
+    .catch(() => {
       return res.status(500).json({ error: 'Error while creating runners' });
     });
 }
