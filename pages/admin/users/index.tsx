@@ -1,166 +1,128 @@
-import { useEffect, useState } from 'react';
-import Head from '@/components/Head';
 import Loading from '@/components/Loading';
 import useAuth from '@/lib/hooks/useAuth';
+import Head from '@/components/Head';
+import { useEffect, useState } from 'react';
 import Icon from '@/components/Icon';
-import { Staff, Student } from '@/lib/interfaces';
-import useRemoteConfig from '@/lib/hooks/useRemoteConfig';
-import useCollectionAsList from '@/lib/hooks/useCollectionAsList';
-import ListItem from '@/components/ListItem';
-import { themedPromiseToast } from '@/lib/utils';
-import { deleteUser } from '@/lib/firebase/frontendUtils';
-import SearchBar from '@/components/SearchBar';
+import Link from 'next/link';
+import NavBar from '@/components/NavBar';
+import { getCollectionSize } from '@/lib/firebase/frontendUtils';
+import { toast } from 'react-toastify';
 
-interface StudentOrStaff {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  class?: string;
-  house?: string;
-}
-
-export default function AdminUsers() {
+export default function AdminIndex() {
   const { isLoggedIn, user } = useAuth();
-  const [students, studentsLoading, studentsError] =
-    useCollectionAsList<Student>('students');
-  const [staff, staffLoading, staffError] = useCollectionAsList<Staff>('staff');
-  const users = [...students, ...staff] as StudentOrStaff[];
-  const { classes, houses } = useRemoteConfig();
 
-  const [filterName, setFilterName] = useState('');
-
-  const [filterType, setFilterType] = useState('');
-  const [filterClasses, setFilterClasses] = useState('');
-  const [filterHouse, setFilterHouse] = useState('');
+  const [studentsCount, setStudentsCount] = useState<number | null>(null);
+  const [staffCount, setStaffCount] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isLoggedIn) {
       return;
     }
+
+    getCollectionSize('students').then((size) => setStudentsCount(size)).catch(() => {
+      toast.error('Fehler beim Laden der Schüler.');
+    });
+    getCollectionSize('staff').then((size) => setStaffCount(size)).catch(() => {
+      toast.error('Fehler beim Laden der Mitarbeiter.');
+    });
   }, [isLoggedIn]);
 
-  if (!user || staffLoading || studentsLoading) {
+  if (!user) {
     return <Loading />;
-  }
-
-  function filter(user: StudentOrStaff): boolean {
-    if (filterType) {
-      if (filterType === 'student' && !user.email.endsWith('@s.birklehof.de')) {
-        return false;
-      }
-      if (filterType === 'staff' && !user.email.endsWith('@birklehof.de')) {
-        return false;
-      }
-      if (
-        filterType === 'other' &&
-        (user.email.endsWith('@birklehof.de') ||
-          user.email.endsWith('@s.birklehof.de'))
-      ) {
-        return false;
-      }
-    }
-
-    if (filterClasses || filterHouse) {
-      if ('class' in user && 'house' in user) {
-        const student = user as Student;
-        if (filterClasses && student.class !== filterClasses) {
-          return false;
-        }
-        if (filterHouse && student.house !== filterHouse) {
-          return false;
-        }
-      } else {
-        return false || (filterHouse == 'Extern (Kollegium)' && !filterClasses);
-      }
-    }
-
-    return (
-      !filterName || (user.firstName + ' ' + user.lastName).includes(filterName)
-    );
   }
 
   return (
     <>
-      <Head title="Nutzerverwaltung" />
-      <main className="main">
-        <SearchBar
-          searchValue={filterName}
-          setSearchValue={setFilterName}
-          filters={[
-            {
-              filerValue: filterType,
-              setFilterValue: setFilterType,
-              filterOptions: [
-                { value: '', label: 'Alle Typen' },
-                { value: 'student', label: 'Schüler' },
-                { value: 'staff', label: 'Lehrer' },
-                { value: 'other', label: 'Sonstige' },
-              ],
-            },
-            {
-              filerValue: filterClasses,
-              setFilterValue: setFilterClasses,
-              filterOptions: [
-                { value: '', label: 'Alle Klassen' },
-                ...classes.map((_class) => ({
-                  value: _class,
-                  label: _class,
-                })),
-              ],
-            },
-            {
-              filerValue: filterHouse,
-              setFilterValue: setFilterHouse,
-              filterOptions: [
-                { value: '', label: 'Alle Häuser' },
-                ...houses.map((house) => ({ value: house, label: house })),
-              ],
-            },
-          ]}
-        />
-        <div className="vertical-list">
-          {users
-            .filter((user) => {
-              return filter(user);
-            })
-            .sort((a, b) => {
-              return (
-                a.firstName.localeCompare(b.firstName) ||
-                a.lastName.localeCompare(b.lastName)
-              );
-            })
-            .map((user) => {
-              return (
-                <ListItem
-                  key={user.id}
-                  mainContent={user.firstName + ' ' + user.lastName}
-                  secondaryContent={user.email}
-                  badges={
-                    user.class && user.house ? [user.class, user.house] : []
-                  }
-                >
-                  <button
-                    className="btn-outline btn-error btn-square btn-sm btn"
-                    onClick={async () =>
-                      await themedPromiseToast(
-                        deleteUser(user.id, user.email),
-                        {
-                          pending: 'Lösche Nutzer ...',
-                          success: 'Nutzer gelöscht',
-                          error: 'Nutzer konnte nicht gelöscht werden',
-                        }
-                      )
-                    }
-                    aria-label="Nutzer löschen"
-                  >
-                    <Icon name="TrashIcon" />
-                  </button>
-                </ListItem>
-              );
-            })}
-          <div className="w-full text-center text-sm">
-            Keine weiteren Nutzer
+      <Head title="Home" />
+      <main className="main gap-2">
+        <NavBar title="Nutzer" />
+        <div className="stats shadow-md w-full">
+          <div className="stat">
+            <Link
+              href="/admin/users/users"
+              className="stat-figure btn-ghost btn-circle btn text-info"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="h-6 w-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+            </Link>
+            <div className="stat-title">Schüler</div>
+            <div className="stat-value">
+              {studentsCount === null ? (
+                <span className="loading loading-dots loading-sm"></span>
+              ) : (
+                studentsCount
+              )}
+            </div>
+          </div>
+          <div className="stat">
+            <Link
+              href="/admin/users/users"
+              className="stat-figure btn-ghost btn-circle btn text-info"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="h-6 w-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+            </Link>
+            <div className="stat-title">Mitarbeiter</div>
+            <div className="stat-value">
+              {staffCount === null ? (
+                <span className="loading loading-dots loading-sm"></span>
+              ) : (
+                staffCount
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-row flex-wrap gap-2 w-full">
+          <div className="filling-card">
+            <div className="card-body">
+              <h2 className="card-title">Aktionen</h2>
+              <Link
+                href={'/admin/users/import'}
+                className="btn-primary btn-outline btn aspect-square w-full"
+              >
+                Nutzer importieren
+              </Link>
+              <Link
+                href={'/admin/users/add'}
+                className="btn-primary btn-outline btn aspect-square w-full"
+              >
+                Nutzer manuell hinzufügen
+              </Link>
+            </div>
           </div>
         </div>
       </main>

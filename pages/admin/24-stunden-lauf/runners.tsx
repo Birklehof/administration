@@ -11,8 +11,9 @@ import ListItem from '@/components/ListItem';
 import { deleteRunner } from '@/lib/firebase/frontendUtils';
 import { themedPromiseToast } from '@/lib/utils';
 import SearchBar from '@/components/SearchBar';
+import ErrorAlert from '@/components/ErrorAlert';
 
-export default function Admin24StundenLauf() {
+export default function Admin24StundenLaufRunners() {
   const router = useRouter();
   const [runners, runnersLoading, runnersError] = useCollectionAsList<Runner>(
     '/apps/24-stunden-lauf/runners'
@@ -79,9 +80,9 @@ export default function Admin24StundenLauf() {
       <Head title="24 Stunden Lauf" />
       <main className="main">
         <SearchBar
-          backLink="/admin/24-stunden-lauf"
           searchValue={filterName}
           setSearchValue={setFilterName}
+          backLink="/admin/24-stunden-lauf"
           filters={[
             {
               filerValue: filterType,
@@ -141,7 +142,7 @@ export default function Admin24StundenLauf() {
                 >
                   <div className="my-auto px-2">
                     <div className="stat-value text-center text-lg font-semibold md:text-xl">
-                      {getLapCount(runner.id || "")}
+                      {getLapCount(runner.id || '')}
                     </div>
                     <div className="stat-title -mt-2 text-center text-xs">
                       Runden
@@ -150,7 +151,7 @@ export default function Admin24StundenLauf() {
                   <button
                     className="btn-outline btn-error btn-square btn-sm btn"
                     onClick={async () =>
-                      await themedPromiseToast(deleteRunner(runner.id || ""), {
+                      await themedPromiseToast(deleteRunner(runner.id || ''), {
                         pending: 'Lösche Läufer...',
                         success: 'Läufer gelöscht.',
                         error: 'Läufer konnte nicht gelöscht werden.',
@@ -163,9 +164,11 @@ export default function Admin24StundenLauf() {
                 </ListItem>
               );
             })}
-          <div className="w-full text-center text-sm">
-            Keine weiteren Läufer
-          </div>
+          {runnersError || lapsError ? (
+            <ErrorAlert message="Läufer konnten nicht geladen werden." />
+          ) : (
+            <div className="w-full text-center">Keine weiteren Läufer</div>
+          )}
         </div>
       </main>
     </>

@@ -1,4 +1,4 @@
-import { deleteDoc, doc, collection, addDoc } from 'firebase/firestore';
+import { deleteDoc, doc, collection, addDoc, getCountFromServer } from 'firebase/firestore';
 import { db } from '.';
 import { Staff, Student } from '../interfaces';
 
@@ -24,4 +24,9 @@ export async function createStudent(student: Student) {
 
 export async function createStaff(staff: Staff) {
   await addDoc(collection(db, 'staff'), staff);
+}
+
+export async function getCollectionSize(collectionName: string): Promise<number> {
+  const snapshot = await getCountFromServer(collection(db, collectionName));
+  return snapshot.data().count || 0;
 }

@@ -8,8 +8,9 @@ import { useRouter } from 'next/router';
 import useRemoteConfig from '@/lib/hooks/useRemoteConfig';
 import ListItem from '@/components/ListItem';
 import SearchBar from '@/components/SearchBar';
+import ErrorAlert from '@/components/ErrorAlert';
 
-export default function Admin24StundenLauf() {
+export default function Admin24StundenLaufArchive() {
   const router = useRouter();
   const [runners, runnersLoading, runnersError] = useCollectionAsList<Runner>(
     '/apps/24-stunden-lauf/archive/' + router.query.archiveId + '/runners'
@@ -76,9 +77,9 @@ export default function Admin24StundenLauf() {
       <Head title="24 Stunden Lauf" />
       <main className="main">
         <SearchBar
-          backLink="/admin/24-stunden-lauf"
           searchValue={filterName}
           setSearchValue={setFilterName}
+          backLink="/admin/24-stunden-lauf"
           filters={[
             {
               filerValue: filterType,
@@ -114,7 +115,11 @@ export default function Admin24StundenLauf() {
               return filter(runner);
             })
             .sort((a, b) => {
-              return getLapCount(b.id || "") - getLapCount(a.id || "") || a.name?.localeCompare(b.name || "") || 0;
+              return (
+                getLapCount(b.id || '') - getLapCount(a.id || '') ||
+                a.name?.localeCompare(b.name || '') ||
+                0
+              );
             })
             .map((runner) => {
               return (
@@ -136,7 +141,7 @@ export default function Admin24StundenLauf() {
                 >
                   <div className="my-auto px-2">
                     <div className="stat-value text-center text-lg font-semibold md:text-xl">
-                      {getLapCount(runner.id || "")}
+                      {getLapCount(runner.id || '')}
                     </div>
                     <div className="stat-title -mt-2 text-center text-xs">
                       Runden
@@ -145,9 +150,11 @@ export default function Admin24StundenLauf() {
                 </ListItem>
               );
             })}
-          <div className="w-full text-center text-sm">
-            Keine weiteren Läufer
-          </div>
+          {runnersError || lapsError ? (
+            <ErrorAlert message="Läufer konnten nicht geladen werden." />
+          ) : (
+            <div className="w-full text-center">Keine weiteren Läufer</div>
+          )}
         </div>
       </main>
     </>

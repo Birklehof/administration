@@ -97,7 +97,7 @@ export default function AdminRoles() {
               badges={[role.role.charAt(0).toUpperCase() + role.role.slice(1)]}
             >
               <button
-                className="btn-outline btn-warning btn-square btn-sm btn mr-1"
+                className="btn-outline btn-warning btn-square btn-sm btn"
                 aria-label="Berechtigung bearbeiten"
                 onClick={() => {
                   setNewRoleEmail(role.email);
@@ -123,8 +123,8 @@ export default function AdminRoles() {
           ))}
           {activeTab !== '' && (
             <>
-              <div className="divider w-full">Berechtigungen bearbeiten</div>
-              <div className="large-card mb-10">
+              <div className="divider max-w-xl mx-auto w-full">Berechtigungen bearbeiten</div>
+              <div className="centered-card mb-10">
                 <div className="card-body">
                   <input
                     value={newRoleEmail}
@@ -146,7 +146,7 @@ export default function AdminRoles() {
                     <option value="assistant">Assistent</option>
                   </select>
                   <button
-                    className={`btn-outline btn-success btn ${
+                    className={`btn-info btn ${
                       submitting ? 'loading' : ''
                     }`}
                     aria-label="Berechtigung hinzufügen"

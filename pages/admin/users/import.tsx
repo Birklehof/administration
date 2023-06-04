@@ -4,6 +4,7 @@ import Loading from '@/components/Loading';
 import useAuth from '@/lib/hooks/useAuth';
 import { toast } from 'react-toastify';
 import { themedPromiseToast } from '@/lib/utils';
+import NavBar from '@/components/NavBar';
 
 export default function AssistantCreateRunner() {
   const { isLoggedIn, user } = useAuth();
@@ -137,57 +138,49 @@ export default function AssistantCreateRunner() {
   return (
     <>
       <Head title="Assistent" />
-      <main className="main">
-        <div className="vertical-list">
-          <div className="large-card">
-            <div className="card-body">
-              <form
-                className="flex flex-col gap-3"
-                onSubmit={importStudentsHandler}
+      <main className="main gap-2">
+        <NavBar title="Nutzer importieren" backLink='/admin/users' />
+        <div className="centered-card">
+          <div className="card-body">
+            <form
+              className="flex flex-col gap-3"
+              onSubmit={importStudentsHandler}
+            >
+              <h2 className="text-center text-lg font-bold">Schüler</h2>
+              <input
+                type="file"
+                className="file-input-bordered file-input file-input-md"
+                name="file"
+                accept=".csv"
+              />
+              <button
+                type="submit"
+                className={`btn-primary btn ${submitting ? 'loading' : ''}`}
+                value="Importieren"
               >
-                <h2 className="text-center text-lg font-bold">
-                  Schüler importieren
-                </h2>
-                <input
-                  type="file"
-                  className="file-input-bordered file-input file-input-md"
-                  name="file"
-                  accept=".csv"
-                />
-                <button
-                  type="submit"
-                  className={`btn-primary btn ${submitting ? 'loading' : ''}`}
-                  value="Importieren"
-                >
-                  Hochladen
-                </button>
-              </form>
-            </div>
+                Hochladen
+              </button>
+            </form>
           </div>
-          <div className="large-card">
-            <div className="card-body">
-              <form
-                className="flex flex-col gap-3"
-                onSubmit={importStaffHandler}
+        </div>
+        <div className="centered-card">
+          <div className="card-body">
+            <form className="flex flex-col gap-3" onSubmit={importStaffHandler}>
+              <h2 className="text-center text-lg font-bold">Mitarbeiter</h2>
+              <input
+                type="file"
+                className="file-input-bordered file-input file-input-md"
+                name="file"
+                accept=".csv"
+              />
+              <button
+                type="submit"
+                className={`btn-primary btn ${submitting ? 'loading' : ''}`}
+                value="Importieren"
               >
-                <h2 className="text-center text-lg font-bold">
-                  Mitarbeiter importieren
-                </h2>
-                <input
-                  type="file"
-                  className="file-input-bordered file-input file-input-md"
-                  name="file"
-                  accept=".csv"
-                />
-                <button
-                  type="submit"
-                  className={`btn-primary btn ${submitting ? 'loading' : ''}`}
-                  value="Importieren"
-                >
-                  Hochladen
-                </button>
-              </form>
-            </div>
+                Hochladen
+              </button>
+            </form>
           </div>
         </div>
       </main>

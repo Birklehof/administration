@@ -52,9 +52,6 @@ export default async function handler(
   const studentsAdded = await addStudents(newNumbersStart, res);
   const staffAdded = await addStaff(res, newNumbersStart + studentsAdded);
 
-  console.log('Added runners:');
-  console.log(studentsAdded, staffAdded);
-
   return res.status(200).json({
     studentsAdded,
     staffAdded,
