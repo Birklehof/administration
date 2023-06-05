@@ -31,13 +31,13 @@ export default function SearchBar({
           ) : (
             <label
               htmlFor="main-menu"
-              className="btn-ghost btn-square btn-sm btn"
+              className="btn-ghost btn-square btn-sm btn lg:invisible"
             >
               <Icon name="MenuIcon" />
             </label>
           )}
         </div>
-        <div className="form-control flex max-w-xl grow flex-row justify-between gap-2">
+        <div className="form-control flex w-full max-w-xl grow flex-row justify-between gap-2">
           {setSearchValue && (
             <input
               className="input-bordered input rounded-box input-sm w-10 grow"
@@ -79,7 +79,21 @@ export default function SearchBar({
             </div>
           )}
         </div>
-        <div className="flex grow" />
+        <div className="flex grow">
+          {/* The button is only here so that the search bar is centered */}
+          {backLink ? (
+            <Link href={backLink} className="btn-ghost btn-square btn-sm btn invisible hidden sm:block">
+              <Icon name="ArrowLeftIcon" />
+            </Link>
+          ) : (
+            <label
+              htmlFor="main-menu"
+              className="btn-ghost btn-square btn-sm btn invisible hidden sm:block"
+            >
+              <Icon name="MenuIcon" />
+            </label>
+          )}
+        </div>
       </div>
     </div>
   );

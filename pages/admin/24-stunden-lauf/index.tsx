@@ -11,6 +11,15 @@ import ListItem from '@/components/ListItem';
 import NavBar from '@/components/NavBar';
 import ErrorAlert from '@/components/ErrorAlert';
 import { toast } from 'react-toastify';
+import { CSVLink } from 'react-csv';
+import {
+  RunnersListCSV as RunnerListCSV,
+  exportRunners,
+} from '@/lib/firebase/exportRunners';
+import {
+  RunnersWithLapsListCSV,
+  exportRunnersWithLaps,
+} from '@/lib/firebase/exportRunnersWithLaps';
 
 export default function Admin24StundenLaufIndex() {
   const { isLoggedIn, user } = useAuth();
@@ -19,6 +28,11 @@ export default function Admin24StundenLaufIndex() {
   const [archives, archivesLoading, archivesError] = useCollectionAsList<any>(
     '/apps/24-stunden-lauf/archive'
   );
+  const [runnerListCSV, setRunnerListCSV] = useState<RunnerListCSV | null>(
+    null
+  );
+  const [runnersWithLapsListCSV, setRunnersWithLapsListCSV] =
+    useState<RunnersWithLapsListCSV | null>(null);
 
   async function addRunnersHandler(): Promise<[number, number]> {
     // Make api request to /api/studentsToRunners
@@ -68,16 +82,20 @@ export default function Admin24StundenLaufIndex() {
       return;
     }
 
-    getCollectionSize('/apps/24-stunden-lauf/runners').then((size) => {
-      setRunnersCount(size);
-    }).catch(() => {
-      toast.error('Fehler beim Laden der Läufer.');
-    });
-    getCollectionSize('/apps/24-stunden-lauf/laps').then((size) => {
-      setLapsCount(size);
-    }).catch(() => {
-      toast.error('Fehler beim Laden der Runden.');
-    });
+    getCollectionSize('/apps/24-stunden-lauf/runners')
+      .then((size) => {
+        setRunnersCount(size);
+      })
+      .catch(() => {
+        toast.error('Fehler beim Laden der Läufer.');
+      });
+    getCollectionSize('/apps/24-stunden-lauf/laps')
+      .then((size) => {
+        setLapsCount(size);
+      })
+      .catch(() => {
+        toast.error('Fehler beim Laden der Runden.');
+      });
   }, [isLoggedIn]);
 
   if (!user) {
@@ -138,55 +156,166 @@ export default function Admin24StundenLaufIndex() {
         <div className="flex w-full flex-row flex-wrap gap-2">
           <div className="filling-card h-fit">
             <div className="card-body">
-              <h2 className="card-title">Aktionen</h2>
-              <button
-                onClick={async () =>
-                  await themedPromiseToast(addRunnersHandler, {
-                    pending: 'Importiere Läufer ...',
-                    success: {
-                      render: (success) => {
-                        return `${success.data[0]} Schüler und ${success.data[1]} Mitarbeiter wurden importiert.`;
-                      },
-                    },
-                    error: {
-                      render: ({ data }: any) => {
-                        if (data.message) {
-                          return data.message;
-                        } else if (typeof data === 'string') {
-                          return data;
-                        }
-                        return 'Fehler beim Importieren der Läufer.';
-                      },
-                    },
-                  })
-                }
-                className="btn-primary btn-outline btn aspect-square w-full"
-                aria-label="Schüler als Läufer hinzufügen"
-              >
-                Läufer importieren
-              </button>
-              <button
-                onClick={async () =>
-                  await themedPromiseToast(archiveHandler, {
-                    pending: 'Archiviere Läufer...',
-                    success: 'Läufer wurden erfolgreich archiviert.',
-                    error: {
-                      render: ({ data }: any) => {
-                        if (data.message) {
-                          return data.message;
-                        } else if (typeof data === 'string') {
-                          return data;
-                        }
-                        return 'Fehler beim Archivieren';
-                      },
-                    },
-                  })
-                }
-                className="btn-outline btn-error btn aspect-square w-full"
-                aria-label="Archivieren"
-              >
-                Lauf archivieren
-              </button>
+              <h2 className="card-title">Ablauf</h2>
+              <ul className="steps steps-vertical">
+                <li className="step">
+                  <div>
+                    Nutzerdatenbank aktualisieren
+                    <div className="dropdown-end dropdown">
+                      <label
+                        tabIndex={0}
+                        className="btn-ghost btn-xs btn-circle btn text-info"
+                      >
+                        <Icon name="InformationCircleIcon" />
+                      </label>
+                      <div
+                        tabIndex={0}
+                        className="compact card dropdown-content rounded-box z-50 w-64 bg-base-100 shadow-md"
+                      >
+                        <div className="card-body text-left">
+                          <p>
+                            Unter{' '}
+                            <Link href={'/admin/users'} className="link">
+                              Nutzer
+                            </Link>{' '}
+                            können Sie die Nutzer verwalten.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li className="step-primary step">
+                  <div
+                    className="tooltip-accent tooltip tooltip-bottom w-full text-left"
+                    data-tip="Importieren Sie hier die Schüler und Mitarbeiter als Läufer. Die Daten werden aus der Nutzerdatenbank übernommen. Bestehende Läufer werden nicht überschrieben."
+                  >
+                    <button
+                      onClick={async () =>
+                        await themedPromiseToast(addRunnersHandler, {
+                          pending: 'Importiere Läufer ...',
+                          success: {
+                            render: (success) => {
+                              return `${success.data[0]} Schüler und ${success.data[1]} Mitarbeiter wurden importiert.`;
+                            },
+                          },
+                          error: {
+                            render: ({ data }: any) => {
+                              if (data.message) {
+                                return data.message;
+                              } else if (typeof data === 'string') {
+                                return data;
+                              }
+                              return 'Fehler beim Importieren der Läufer.';
+                            },
+                          },
+                        })
+                      }
+                      className="btn-primary btn-outline btn-sm btn aspect-square w-full"
+                      aria-label="Schüler als Läufer hinzufügen"
+                    >
+                      <Icon name="UserAddIcon" />
+                      Läufer importieren
+                    </button>
+                  </div>
+                </li>
+                <li className="step-info step">
+                  <div
+                    className="tooltip-accent tooltip w-full text-left"
+                    data-tip="Laden Sie hier die Teilnehmerliste herunter, um die Nummern ausgeben zu können."
+                  >
+                    <button
+                      className="btn-info btn-outline btn-sm btn aspect-square w-full"
+                      aria-label="Schüler als Läufer hinzufügen"
+                      onClick={async () => {
+                        setRunnerListCSV(await exportRunners());
+                        // Click invisible download button after 1 second
+                        await new Promise((resolve) => setTimeout(resolve, 1000));
+                        document
+                          .getElementById('download-runners-csv')
+                          ?.click();
+                      }}
+                    >
+                      <Icon name="DocumentDownloadIcon" />
+                      Teilnehmerliste herunterladen
+                    </button>
+                    {runnerListCSV && (
+                      <CSVLink
+                        id={'download-runners-csv'}
+                        {...runnerListCSV}
+                        className="btn-primary btn hidden"
+                      >
+                        Herunterladen
+                      </CSVLink>
+                    )}
+                  </div>
+                </li>
+                <li className="step">Nummern ausgeben</li>
+                <li className="step">Laufen</li>
+                <li className="step-info step">
+                  <div
+                    className="tooltip-accent tooltip w-full text-left"
+                    data-tip="Laden Sie hier die Ergebnisliste herunter."
+                  >
+                    <button
+                      className="btn-info btn-outline btn-sm btn aspect-square w-full"
+                      aria-label="Schüler als Läufer hinzufügen"
+                      onClick={async () => {
+                        setRunnersWithLapsListCSV(
+                          await exportRunnersWithLaps()
+                        );
+                        // Click invisible download button after 1 second
+                        await new Promise((resolve) => setTimeout(resolve, 1000));
+                        document
+                          .getElementById('download-results-csv')
+                          ?.click();
+                      }}
+                    >
+                      <Icon name="DocumentDownloadIcon" />
+                      Ergebnisliste herunterladen
+                    </button>
+                    {runnersWithLapsListCSV && (
+                      <CSVLink
+                        id={'download-results-csv'}
+                        {...runnersWithLapsListCSV}
+                        className="btn-primary btn hidden"
+                      >
+                        Herunterladen
+                      </CSVLink>
+                    )}
+                  </div>
+                </li>
+                <li className="step-error step">
+                  <div
+                    className="tooltip-accent tooltip w-full text-left"
+                    data-tip="Durch das Archivieren werden die Läufer und Runden ins Archiv verschoben. Sie bleiben dort einsehbar allerdings können die Daten nicht mehr einfach geändert werden."
+                  >
+                    <button
+                      onClick={async () =>
+                        await themedPromiseToast(archiveHandler, {
+                          pending: 'Archiviere Läufer...',
+                          success: 'Läufer wurden erfolgreich archiviert.',
+                          error: {
+                            render: ({ data }: any) => {
+                              if (data.message) {
+                                return data.message;
+                              } else if (typeof data === 'string') {
+                                return data;
+                              }
+                              return 'Fehler beim Archivieren';
+                            },
+                          },
+                        })
+                      }
+                      className="btn-outline btn-error btn-sm btn w-full"
+                      aria-label="Archivieren"
+                    >
+                      <Icon name="ArchiveIcon" />
+                      Lauf Archivieren
+                    </button>
+                  </div>
+                </li>
+              </ul>
             </div>
           </div>
           <div className="filling-card !bg-opacity-60">
