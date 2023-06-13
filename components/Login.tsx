@@ -24,12 +24,11 @@ export default function Login() {
   return (
     <>
       <button
-        className={`btn-outline btn-primary btn w-full ${
-          isLoggedIn ? 'btn-disabled loading' : ''
-        }`}
+        className="btn-primary btn-outline btn w-full"
         onClick={() => handleAuth()}
         disabled={isLoggedIn}
       >
+        {isLoggedIn && <span className="loading loading-spinner" />}
         Admin
       </button>
     </>
