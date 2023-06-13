@@ -5,8 +5,8 @@ import { User } from '@/lib/interfaces';
 import { doc, getDoc } from 'firebase/firestore';
 
 function useAuth() {
-  const [user, setUser] = useState<User>();
-  const [role, setRole] = useState<string>('');
+  const [user, setUser] = useState<User | undefined>(undefined);
+  const [role, setRole] = useState<string | undefined>(undefined); // '' (no role) | 'admin'
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -27,14 +27,16 @@ function useAuth() {
     });
   }, []);
 
-  async function getUserRole(user: User): Promise<string> {
+  async function getUserRole(user: User): Promise<string | undefined> {
     if (!user || !user.email) {
-      return '';
+      return;
     }
+
     const userRole = await getDoc(
       doc(db, '/apps/administration/roles', user.email)
     );
     const role = userRole.data()?.role || '';
+
     return role;
   }
 

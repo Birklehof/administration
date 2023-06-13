@@ -2,7 +2,6 @@ import Loading from '@/components/Loading';
 import useAuth from '@/lib/hooks/useAuth';
 import Head from '@/components/Head';
 import { useEffect } from 'react';
-import Link from 'next/link';
 import NavBar from '@/components/NavBar';
 
 export default function AdminIndex() {

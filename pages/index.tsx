@@ -10,6 +10,7 @@ export default function Index() {
 
   useEffect(() => {
     if (isLoggedIn && user){
+      if (role === undefined) return;
 
       if (role === '') {
         themedErrorToast('Du hast keine Berechtigung für diese Seite.');
