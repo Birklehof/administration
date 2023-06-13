@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import Head from '@/components/Head';
 import Loading from '@/components/Loading';
 import useAuth from '@/lib/hooks/useAuth';
-import { toast } from 'react-toastify';
-import { themedPromiseToast } from '@/lib/utils';
+import { themedErrorToast, themedPromiseToast } from '@/lib/utils';
 import NavBar from '@/components/NavBar';
 
 export default function AssistantCreateRunner() {
@@ -38,7 +37,7 @@ export default function AssistantCreateRunner() {
     if (file && file.name.endsWith('.csv')) {
       body.append('file', file);
     } else {
-      toast.error('Bitte lade eine CSV-Datei hoch');
+      themedErrorToast('Bitte lade eine CSV-Datei hoch');
       setSubmitting(false);
       return;
     }
@@ -83,7 +82,7 @@ export default function AssistantCreateRunner() {
     if (file && file.name.endsWith('.csv')) {
       body.append('file', file);
     } else {
-      toast.error('Bitte lade eine CSV-Datei hoch');
+      themedErrorToast('Bitte lade eine CSV-Datei hoch');
       setSubmitting(false);
       return;
     }

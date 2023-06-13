@@ -2,11 +2,10 @@ import Loading from '@/components/Loading';
 import useAuth from '@/lib/hooks/useAuth';
 import Head from '@/components/Head';
 import { useEffect, useState } from 'react';
-import Icon from '@/components/Icon';
 import Link from 'next/link';
 import NavBar from '@/components/NavBar';
 import { getCollectionSize } from '@/lib/firebase/frontendUtils';
-import { toast } from 'react-toastify';
+import { themedErrorToast } from '@/lib/utils';
 
 export default function AdminIndex() {
   const { isLoggedIn, user } = useAuth();
@@ -20,10 +19,10 @@ export default function AdminIndex() {
     }
 
     getCollectionSize('students').then((size) => setStudentsCount(size)).catch(() => {
-      toast.error('Fehler beim Laden der Schüler.');
+      themedErrorToast('Fehler beim Laden der Schüler.');
     });
     getCollectionSize('staff').then((size) => setStaffCount(size)).catch(() => {
-      toast.error('Fehler beim Laden der Mitarbeiter.');
+      themedErrorToast('Fehler beim Laden der Mitarbeiter.');
     });
   }, [isLoggedIn]);
 

@@ -2,7 +2,7 @@ import Loading from '@/components/Loading';
 import useAuth from '@/lib/hooks/useAuth';
 import Head from '@/components/Head';
 import { useEffect, useState } from 'react';
-import { themedPromiseToast } from '@/lib/utils';
+import { themedErrorToast, themedPromiseToast } from '@/lib/utils';
 import useCollectionAsList from '@/lib/hooks/useCollectionAsList';
 import Link from 'next/link';
 import Icon from '@/components/Icon';
@@ -10,7 +10,6 @@ import { deleteArchive, getCollectionSize } from '@/lib/firebase/frontendUtils';
 import ListItem from '@/components/ListItem';
 import NavBar from '@/components/NavBar';
 import ErrorAlert from '@/components/ErrorAlert';
-import { toast } from 'react-toastify';
 import { CSVLink } from 'react-csv';
 import {
   RunnersListCSV as RunnerListCSV,
@@ -87,14 +86,14 @@ export default function Admin24StundenLaufIndex() {
         setRunnersCount(size);
       })
       .catch(() => {
-        toast.error('Fehler beim Laden der Läufer.');
+        themedErrorToast('Fehler beim Laden der Läufer.');
       });
     getCollectionSize('/apps/24-stunden-lauf/laps')
       .then((size) => {
         setLapsCount(size);
       })
       .catch(() => {
-        toast.error('Fehler beim Laden der Runden.');
+        themedErrorToast('Fehler beim Laden der Runden.');
       });
   }, [isLoggedIn]);
 

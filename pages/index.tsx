@@ -3,12 +3,20 @@ import Head from '@/components/Head';
 import useAuth from '@/lib/hooks/useAuth';
 import router from 'next/router';
 import { useEffect } from 'react';
+import { themedErrorToast } from '@/lib/utils';
 
 export default function Index() {
   const { isLoggedIn, user, role, logout } = useAuth();
 
   useEffect(() => {
-    if (isLoggedIn && user && role) {
+    if (isLoggedIn && user){
+
+      if (role === '') {
+        themedErrorToast('Du hast keine Berechtigung für diese Seite.');
+        logout();
+        return;
+      }
+
       redirect(role).then((path) => {
         router.push(path);
       });
@@ -19,9 +27,7 @@ export default function Index() {
     if (role === 'admin') {
       return '/admin';
     } else {
-      alert('Du hast keine Berechtigung für diese Seite.');
-      logout();
-      return '/';
+      throw new Error('Unknown role');
     }
   }
 
